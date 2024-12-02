@@ -3,11 +3,11 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const connectDB = require('./config/db');
-// const morgan = require('morgan');
 
-
+// Routes
 const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
+const uploadImageRoute = require('./routes/uploadImageRoute');
 
 const app = express();
 
@@ -19,9 +19,13 @@ app.use(express.json());
 app.use(cors());
 app.use(helmet());
 
+
 // Routes
 app.use('/api/products', productRoutes);
 app.use('/api/auth', userRoutes);
+app.use('/api/upload_image', uploadImageRoute);
+
+
 
 // Error Handling Middleware
 app.use((req, res, next) => {
@@ -35,6 +39,8 @@ app.use((error, req, res, next) => {
         message: error.message,
     });
 });
+
+
 
 
 // Start Server
