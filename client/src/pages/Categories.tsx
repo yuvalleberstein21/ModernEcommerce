@@ -4,7 +4,7 @@ import PopularItems from '../components/Home/PopularItems';
 const Categories = () => {
   return (
     <div className="w-full">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-4">
         {/* Category Card */}
         <div className="bg-gray-100 p-2 relative h-[260px] flex">
           {/* Image Container - Left Side */}

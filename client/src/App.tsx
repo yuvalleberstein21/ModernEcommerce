@@ -1,6 +1,8 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import Navbar from './utils/Navbar';
+import Footer from './utils/Footer';
+import SingleProduct from './pages/SingleProduct';
 
 function App() {
   return (
@@ -8,9 +10,9 @@ function App() {
       <Navbar />
       <Routes>
         <Route index path="/" element={<Home />} />
-        {/* <Route path="dashboard" element={<Dashboard />}>
-        <Route path="project/:id" element={<Project />} /> */}
+        <Route path="product/:id" element={<SingleProduct />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }

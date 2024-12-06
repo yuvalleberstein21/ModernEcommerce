@@ -1,7 +1,7 @@
 import Title from '../Title';
 import Chair2 from '../../assets/chairCategory2.png';
 import Chair1 from '../../assets/chair6.png';
-import { Plus } from 'lucide-react';
+import { Heart, Plus } from 'lucide-react';
 
 const PopularItems = () => {
   return (
@@ -15,8 +15,11 @@ const PopularItems = () => {
         <span>Table</span>
         <span>Monitor</span>
       </div>
-      <div className="grid grid-cols-4 gap-4 mt-6">
+      <div className="grid md:grid-cols-4 lg:grid-cols-4 grid-cols-2 gap-3 mt-6">
         <div className="card bg-gray-100 p-3 rounded-lg cursor-pointer">
+          <span>
+            <Heart size={20} />
+          </span>
           <img
             src={Chair2}
             alt="Product Image"
@@ -34,6 +37,9 @@ const PopularItems = () => {
           </div>
         </div>
         <div className="card bg-gray-100 p-3 rounded-lg cursor-pointer">
+          <span>
+            <Heart size={20} />
+          </span>
           <img
             src={Chair1}
             alt="Product Image"
