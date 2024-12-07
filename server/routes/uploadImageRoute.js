@@ -31,6 +31,7 @@ async function getAllImages() {
             resource_type: 'image',
             max_results: 500
         });
+        // console.log('Fetched images:', result);
 
         return result.resources.map(resource => ({
             public_id: resource.public_id,
