@@ -1,7 +1,17 @@
 import { useState } from 'react';
 import { ShoppingCart, Menu, X, User, Search, Heart } from 'lucide-react';
+import Login from '../pages/Login';
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -22,7 +32,7 @@ const Navbar = () => {
             {/* Logo */}
             <div className="flex items-center">
               <a href="/" className="text-2xl font-bold text-gray-800">
-                StyleHub
+                DESIGN.YL
               </a>
             </div>
 
@@ -62,9 +72,13 @@ const Navbar = () => {
                 </span>
               </a>
 
-              <a href="/profile" className="text-gray-700 hover:text-blue-600">
+              <span
+                onClick={openModal}
+                className="text-gray-700 hover:text-blue-600"
+              >
                 <User size={24} />
-              </a>
+              </span>
+              {isModalOpen && <Login onClose={closeModal} />}
 
               {/* Mobile Menu Button */}
               <div className="md:hidden">
