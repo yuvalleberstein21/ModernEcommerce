@@ -1,8 +1,26 @@
 import { MoveRight } from 'lucide-react';
 import Title from '../Title';
 import ProductCard from '../ProductCard';
+import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
+import { useEffect } from 'react';
+import {
+  fetchProducts,
+  fetchProductsStart,
+} from '../../redux/store/slices/productsSlice';
 
 const Products = () => {
+  const dispatch = useAppDispatch();
+  const { items, loading, error } = useAppSelector((state) => state.products);
+
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
+
+  if (loading) return <div>Loading products...</div>;
+  if (error) return <div>Error: {error}</div>;
+
+  console.log(items);
+
   return (
     <>
       <Title title="Main Products" />
