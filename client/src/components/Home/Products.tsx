@@ -3,29 +3,30 @@ import Title from '../Title';
 import ProductCard from '../ProductCard';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
 import { useEffect } from 'react';
-import {
-  fetchProducts,
-  fetchProductsStart,
-} from '../../redux/store/slices/productsSlice';
+import { fetchProducts } from '../../redux/slices/productsSlice';
+import { RootState } from '../../redux/store';
 
-const Products = () => {
+const Products: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { items, loading, error } = useAppSelector((state) => state.products);
+  const { items, loading, error } = useAppSelector(
+    (state: RootState) => state.products
+  );
 
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  if (loading) return <div>Loading products...</div>;
-  if (error) return <div>Error: {error}</div>;
-
   console.log(items);
 
   return (
     <>
+      {loading && <p>Loading...</p>}
+      {error && <p>Error: {error}</p>}
       <Title title="Main Products" />
       <div className="grid md:grid-cols-3 lg:grid-cols-3 grid-cols-2 gap-3 mt-6">
-        <ProductCard />
+        {items.products?.map((prod) => (
+          <ProductCard key={prod._id} product={prod} />
+        ))}
       </div>
 
       <div className="mt-6 text-right">
