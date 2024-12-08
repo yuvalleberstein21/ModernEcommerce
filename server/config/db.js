@@ -10,9 +10,4 @@ const connectDB = async () => {
 };
 
 
-
-// const connectDB = async () => {
-//     console.log('Using fake data for development...');
-// };
-
 module.exports = connectDB;
