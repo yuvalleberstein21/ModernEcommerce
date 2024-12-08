@@ -3,28 +3,38 @@ import Title from '../Title';
 import ProductCard from '../ProductCard';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
 import { useEffect } from 'react';
-import { fetchProducts } from '../../redux/slices/productsSlice';
+
 import { RootState } from '../../redux/store';
+import { Product } from '../../Types';
+import { productList } from '../../redux/actions/productActions';
 
 const Products: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { items, loading, error } = useAppSelector(
+  const { products, loading, error } = useAppSelector(
     (state: RootState) => state.products
   );
 
-  useEffect(() => {
-    dispatch(fetchProducts());
-  }, [dispatch]);
+  console.log(products);
 
-  console.log(items);
+  // useEffect(() => {
+  //   dispatch(productList());
+  // }, [dispatch]);
+
+  useEffect(() => {
+    // Dispatch fetch products if no products exist
+    if (!products || products.length === 0) {
+      dispatch(productList());
+    }
+  }, [dispatch, products]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <>
-      {loading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
       <Title title="Main Products" />
       <div className="grid md:grid-cols-3 lg:grid-cols-3 grid-cols-2 gap-3 mt-6">
-        {items.products?.map((prod) => (
+        {products?.map((prod: Product) => (
           <ProductCard key={prod._id} product={prod} />
         ))}
       </div>

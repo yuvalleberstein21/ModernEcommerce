@@ -1,7 +1,11 @@
 import { Plus, Heart } from 'lucide-react';
-
 import { Link } from 'react-router-dom';
-const ProductCard = ({ product }) => {
+import { Product } from '../Types';
+
+interface ProductCardProps {
+  product: Product;
+}
+const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   return (
     <Link to={`/product/${product._id}`}>
       <div className="card bg-gray-100 p-3 rounded-lg cursor-pointer">
