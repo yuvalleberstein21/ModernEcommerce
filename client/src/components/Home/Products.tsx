@@ -3,7 +3,6 @@ import Title from '../Title';
 import ProductCard from '../ProductCard';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
 import { useEffect } from 'react';
-
 import { RootState } from '../../redux/store';
 import { Product } from '../../Types';
 import { productList } from '../../redux/actions/productActions';
@@ -14,14 +13,7 @@ const Products: React.FC = () => {
     (state: RootState) => state.products
   );
 
-  console.log(products);
-
-  // useEffect(() => {
-  //   dispatch(productList());
-  // }, [dispatch]);
-
   useEffect(() => {
-    // Dispatch fetch products if no products exist
     if (!products || products.length === 0) {
       dispatch(productList());
     }

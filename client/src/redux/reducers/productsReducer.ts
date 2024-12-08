@@ -1,15 +1,15 @@
 // import { PayloadAction } from "@reduxjs/toolkit";
 import {
-  PRODUCT_DETAILS_FAIL,
-  PRODUCT_DETAILS_REQUEST,
-  PRODUCT_DETAILS_SUCCESS,
   PRODUCT_LIST_FAIL,
   PRODUCT_LIST_REQUEST,
   PRODUCT_LIST_SUCCESS,
+  SINGLE_PRODUCT_FAIL,
+  SINGLE_PRODUCT_REQUEST,
+  SINGLE_PRODUCT_SUCCESS,
 } from '../constant/ProductConstant';
 
 export const productListReducer = (
-  state = { products: [], loading: false, error: null },
+  state = { product: { reviews: [] }, loading: false, error: null },
   action: any
 ) => {
   switch (action.type) {
@@ -25,20 +25,17 @@ export const productListReducer = (
 };
 
 // SINGLE PRODUCT
-export const productDetailsReducer = (
-  state = { product: { reviews: [] } },
+export const singleProductReducer = (
+  state = { product: { reviews: [] }, loading: false, error: null },
   action
 ) => {
   switch (action.type) {
-    case PRODUCT_DETAILS_REQUEST:
-      return { ...state, loading: true };
-
-    case PRODUCT_DETAILS_SUCCESS:
-      return { loading: false, product: action.payload };
-
-    case PRODUCT_DETAILS_FAIL:
-      return { loading: false, error: action.payload };
-
+    case SINGLE_PRODUCT_REQUEST:
+      return { ...state, loading: true, product: null, error: null }; // Clear product
+    case SINGLE_PRODUCT_SUCCESS:
+      return { loading: false, product: action.payload, error: null };
+    case SINGLE_PRODUCT_FAIL:
+      return { loading: false, error: action.payload, product: null }; // Clear product on error
     default:
       return state;
   }

@@ -10,11 +10,15 @@ import {
   REGISTER,
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import { productListReducer } from './reducers/productsReducer';
+import {
+  productListReducer,
+  singleProductReducer,
+} from './reducers/productsReducer';
 
 // Create the root reducer
 const rootReducer = combineReducers({
   products: productListReducer,
+  product: singleProductReducer,
   // Add other reducers here
 });
 
