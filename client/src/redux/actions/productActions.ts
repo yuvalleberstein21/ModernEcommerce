@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { getDataFromServer } from '../../utils/Api';
 import {
   PRODUCT_LIST_FAIL,
@@ -14,11 +13,11 @@ export const productList = () => async (dispatch: AppDispatch) => {
   try {
     dispatch({ type: PRODUCT_LIST_REQUEST });
 
-    const response = await axios.get('http://localhost:8000/api/products');
+    const data = await getDataFromServer('api/products');
 
     dispatch({
       type: PRODUCT_LIST_SUCCESS,
-      payload: response.data,
+      payload: data, // Dispatch the fetched data
     });
   } catch (error: any) {
     dispatch({
@@ -33,13 +32,11 @@ export const singleProductDetails =
     try {
       dispatch({ type: SINGLE_PRODUCT_REQUEST });
 
-      const response = await axios.get(
-        `http://localhost:8000/api/products?productId=${id}`
-      );
+      const data = await getDataFromServer(`api/products?productId=${id}`);
 
       dispatch({
         type: SINGLE_PRODUCT_SUCCESS,
-        payload: response.data,
+        payload: data, // Dispatch the fetched data
       });
     } catch (error: any) {
       dispatch({

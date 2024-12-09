@@ -14,18 +14,20 @@ import {
   productListReducer,
   singleProductReducer,
 } from './reducers/productsReducer';
+import { cartReducer } from './reducers/cartReducer';
 
 // Create the root reducer
 const rootReducer = combineReducers({
   products: productListReducer,
   product: singleProductReducer,
-  // Add other reducers here
+  cart: cartReducer,
 });
 
 // Persist configuration
 const persistConfig = {
-  key: 'root', // key is required
-  storage, // storage is now required
+  key: 'root',
+  storage,
+  // Only persist the `cart` reducer
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

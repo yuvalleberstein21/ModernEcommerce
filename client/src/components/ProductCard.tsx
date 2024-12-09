@@ -1,6 +1,7 @@
-import { Plus, Heart } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Product } from '../Types';
+import AddToCartButton from './AddToCartButton';
 
 interface ProductCardProps {
   product: Product;
@@ -24,9 +25,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <p className="text-sm text-gray-600">{product.description}</p>
           <div className="flex justify-between">
             <span className="text-sm text-gray-400">${product.price}</span>
-            <span className="px-2 py-2 bg-gray-200 rounded-full">
+            <AddToCartButton product={product} />
+            {/* <span className="px-2 py-2 bg-gray-200 rounded-full">
               <Plus size={20} />
-            </span>
+            </span> */}
           </div>
         </div>
       </div>

@@ -18,6 +18,15 @@ export interface User {
   role: 'admin' | 'user';
 }
 
+export interface CartItem {
+  product: string;
+  name: string;
+  image: string;
+  price: number;
+  quantity: number;
+  stock: number;
+}
+
 export interface ApiError {
   message: string;
 }
