@@ -36,11 +36,11 @@ export const cartReducer = (state = initialState, action): CartState => {
       );
 
       if (existingItem) {
-        // Update quantity if item already exists
+        // Replace the existing item with the new one
         return {
           ...state,
           cartItems: state.cartItems.map((item) =>
-            item.product === existingItem.product ? newItem : item
+            item.product === newItem.product ? newItem : item
           ),
         };
       } else {

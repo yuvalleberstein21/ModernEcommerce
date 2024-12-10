@@ -27,7 +27,6 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: 'root',
   storage,
-  // Only persist the `cart` reducer
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

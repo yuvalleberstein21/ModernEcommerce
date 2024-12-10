@@ -5,14 +5,13 @@ import { useAppSelector } from '../hooks/reduxHooks';
 import { RootState } from '../redux/store';
 
 const Navbar = () => {
-  const cartItems = useAppSelector((state: RootState) => state.cart.cartItems);
+  const cartItems = useAppSelector((state: RootState) => state.cart?.cartItems);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const cartLength = cartItems.length;
   const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-  console.log(cartLength);
-  console.log(totalQuantity);
+
+  console.log(cartItems);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -77,7 +76,7 @@ const Navbar = () => {
                 rounded-full w-5 h-5 flex items-center justify-center 
                 text-xs font-bold"
                 >
-                  3
+                  {totalQuantity}
                 </span>
               </a>
 

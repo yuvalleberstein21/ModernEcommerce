@@ -19,6 +19,7 @@ export interface User {
 }
 
 export interface CartItem {
+  _id?: string;
   product: string;
   name: string;
   image: string;

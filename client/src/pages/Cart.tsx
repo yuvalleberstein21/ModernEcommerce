@@ -9,82 +9,81 @@ import {
   MapPin,
   Percent,
 } from 'lucide-react';
-import Chair1 from '../assets/chairCategory1.png';
+
+import { useAppSelector } from '../hooks/reduxHooks';
+import { RootState } from '../redux/store';
+import { CartItem } from '../Types';
 const Cart = () => {
+  const cartItems = useAppSelector((state: RootState) => state.cart?.cartItems);
+
   // Initial cart items
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: 'Modern Leather Sofa',
-      price: 1299.99,
-      quantity: 1,
-      image: '/api/placeholder/300/200',
-      brand: 'Urban Living',
-    },
-    {
-      id: 2,
-      name: 'Ergonomic Office Chair',
-      price: 349.99,
-      quantity: 2,
-      image: '/api/placeholder/300/200',
-      brand: 'WorkPro',
-    },
-  ]);
+  // const [cartItems, setCartItems] = useState([
+  //   {
+  //     id: 1,
+  //     name: 'Modern Leather Sofa',
+  //     price: 1299.99,
+  //     quantity: 1,
+  //     image: '/api/placeholder/300/200',
+  //     brand: 'Urban Living',
+  //   },
+  //   {
+  //     id: 2,
+  //     name: 'Ergonomic Office Chair',
+  //     price: 349.99,
+  //     quantity: 2,
+  //     image: '/api/placeholder/300/200',
+  //     brand: 'WorkPro',
+  //   },
+  // ]);
 
   // Coupon and discount state
-  const [couponCode, setCouponCode] = useState('');
-  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  // const [couponCode, setCouponCode] = useState('');
+  // const [appliedCoupon, setAppliedCoupon] = useState(null);
 
   // Predefined coupon codes
-  const coupons = [
-    { code: 'SAVE10', discount: 0.1, description: '10% Off' },
-    { code: 'WELCOME20', discount: 0.2, description: '20% Off First Purchase' },
-  ];
+  // const coupons = [
+  //   { code: 'SAVE10', discount: 0.1, description: '10% Off' },
+  //   { code: 'WELCOME20', discount: 0.2, description: '20% Off First Purchase' },
+  // ];
 
-  // Update item quantity
-  const updateQuantity = (id, newQuantity) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: Math.max(1, newQuantity) } : item
-      )
-    );
-  };
+  // // Update item quantity
+  // const updateQuantity = (id, newQuantity) => {
+  //   setCartItems((prevItems) =>
+  //     prevItems.map((item) =>
+  //       item.id === id ? { ...item, quantity: Math.max(1, newQuantity) } : item
+  //     )
+  //   );
+  // };
 
-  // Remove item from cart
-  const removeItem = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
-  };
+  // // Remove item from cart
+  // const removeItem = (id) => {
+  //   setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  // };
 
-  // Apply coupon
-  const applyCoupon = () => {
-    const foundCoupon = coupons.find(
-      (coupon) => coupon.code.toUpperCase() === couponCode.toUpperCase()
-    );
+  // // Apply coupon
+  // const applyCoupon = () => {
+  //   const foundCoupon = coupons.find(
+  //     (coupon) => coupon.code.toUpperCase() === couponCode.toUpperCase()
+  //   );
 
-    if (foundCoupon) {
-      setAppliedCoupon(foundCoupon);
-    } else {
-      alert('Invalid coupon code');
-    }
-  };
+  //   if (foundCoupon) {
+  //     setAppliedCoupon(foundCoupon);
+  //   } else {
+  //     alert('Invalid coupon code');
+  //   }
+  // };
 
   // Calculate totals
   const cartSummary = useMemo(() => {
-    const subtotal = cartItems.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
+    const totalPrice = cartItems.reduce((total: number, item) => {
+      const price = Number(item.price); // Convert to number
+      const quantity = Number(item.quantity); // Convert to number
+      return total + price * quantity;
+    }, 0);
 
-    const discount = appliedCoupon ? subtotal * appliedCoupon.discount : 0;
+    return totalPrice;
+  }, [cartItems]);
 
-    const total = subtotal - discount;
-
-    return {
-      subtotal,
-      discount,
-      total,
-    };
-  }, [cartItems, appliedCoupon]);
   return (
     <div className="container">
       <div className="mx-auto px-4 py-8">
@@ -107,20 +106,20 @@ const Cart = () => {
                 <p className="text-xl text-gray-600">Your cart is empty</p>
               </div>
             ) : (
-              cartItems.map((item) => (
+              cartItems.map((item: CartItem) => (
                 <div
-                  key={item.id}
+                  key={item.product}
                   className="flex items-center border-b py-4 hover:bg-gray-50 transition"
                 >
                   <img
-                    src={Chair1}
+                    src={item.image}
                     alt={item.name}
                     className="w-24 h-24 object-cover rounded mr-6"
                   />
 
                   <div className="flex-grow">
                     <h3 className="text-xl font-semibold">{item.name}</h3>
-                    <p className="text-gray-600">{item.brand}</p>
+                    {/* <p className="text-gray-600">{item.brand}</p> */}
                     <p className="font-bold text-blue-600">
                       ${item.price.toFixed(2)}
                     </p>
@@ -128,14 +127,14 @@ const Cart = () => {
 
                   <div className="flex items-center mr-6">
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      // onClick={() => updateQuantity(item.id, item.quantity - 1)}
                       className="border rounded p-1 mr-2"
                     >
                       <Minus size={16} />
                     </button>
                     <span className="mx-2">{item.quantity}</span>
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      // onClick={() => updateQuantity(item.id, item.quantity + 1)}
                       className="border rounded p-1 ml-2"
                     >
                       <Plus size={16} />
@@ -147,7 +146,7 @@ const Cart = () => {
                   </div>
 
                   <button
-                    onClick={() => removeItem(item.id)}
+                    // onClick={() => removeItem(item.id)}
                     className="text-red-500 hover:text-red-700"
                   >
                     <Trash2 />
@@ -165,11 +164,11 @@ const Cart = () => {
               {/* Subtotal */}
               <div className="flex justify-between mb-2">
                 <span>Subtotal</span>
-                <span>${cartSummary.subtotal.toFixed(2)}</span>
+                {/* <span>${cartSummary.subtotal.toFixed(2)}</span> */}
               </div>
 
               {/* Discount */}
-              {appliedCoupon && (
+              {/* {appliedCoupon && (
                 <div className="flex justify-between mb-2 text-green-600">
                   <span>
                     <Tag className="inline-block mr-2" size={16} />
@@ -177,16 +176,16 @@ const Cart = () => {
                   </span>
                   <span>-${cartSummary.discount.toFixed(2)}</span>
                 </div>
-              )}
+              )} */}
 
               {/* Total */}
               <div className="flex justify-between font-bold text-lg border-t pt-2 mt-2">
                 <span>Total</span>
-                <span>${cartSummary.total.toFixed(2)}</span>
+                <span>${cartSummary.toFixed(2)}</span>
               </div>
 
               {/* Coupon Input */}
-              <div className="mt-4 flex">
+              {/* <div className="mt-4 flex">
                 <input
                   type="text"
                   placeholder="Enter coupon code"
@@ -200,7 +199,7 @@ const Cart = () => {
                 >
                   <Percent size={16} />
                 </button>
-              </div>
+              </div> */}
 
               {/* Checkout Button */}
               <button
