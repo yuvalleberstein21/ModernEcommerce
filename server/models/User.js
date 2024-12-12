@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 
-
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -25,13 +24,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['user', 'admin'],
         default: 'user'
-    },
-    address: {
-        street: String,
-        city: String,
-        state: String,
-        country: String,
-        zipCode: String
     },
     wishlist: [{
         type: mongoose.Schema.Types.ObjectId,

@@ -1,5 +1,5 @@
 const express = require('express');
-const { getProducts, getProductsByCategory, createCategory } = require('../controllers/productController');
+const { getProducts, getCategories } = require('../controllers/productController');
 const authenticateJWT = require('../middleware/authenticateJWT');
 const multer = require('multer');
 
@@ -30,8 +30,10 @@ const router = express.Router();
 
 // GET PRODUCTS && GET PRODUCT  BY ID
 router.get('/', getProducts);
-router.post('/createCategory', upload.single('image'), createCategory);
-router.get('/category/:categoryName', getProductsByCategory);
+router.get('/categories', getCategories);
+
+// router.post('/createCategory', upload.single('image'), createCategory);
+// router.get('/category/:categoryName', getProductsByCategory);
 
 
 // router.post('/', authenticateJWT, admin, createProduct);

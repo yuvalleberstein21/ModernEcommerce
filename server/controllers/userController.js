@@ -37,7 +37,7 @@ const loginUser = async (req, res) => {
         res.status(200).json({
             message: 'התחברת בהצלחה',
             token,
-            user: { id: user.id, email: user.email, name: user.name },
+            user: { _id: user.id, name: user.name, email: user.email, role: user.role, createdAt: user.createdAt },
         });
     } catch (err) {
         res.status(500).json({ message: 'שגיאת שרת: ' + err.message });
@@ -84,7 +84,6 @@ const registerUser = async (req, res) => {
 
 const getUserProfile = async (req, res) => {
     try {
-        // Find user by ID (from auth middleware) and exclude password
         const user = await User.findById(req.user.id).select('-password');
 
         if (!user) {
