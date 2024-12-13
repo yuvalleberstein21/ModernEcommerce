@@ -13,7 +13,7 @@ cloudinary.config({
 
 // Get all products // single product
 const getProducts = asyncHandler(async (req, res) => {
-    const { productId, page = 1, limit = 10, category } = req.query;
+    const { productId, page = 1, limit = 6, category } = req.query;
 
     try {
         if (productId) {

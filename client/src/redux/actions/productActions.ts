@@ -16,14 +16,6 @@ import {
 } from '../constant/ProductConstant';
 import { AppDispatch } from '../store';
 
-const GLOBAL_URL = import.meta.env.VITE_GLOBAL_URL;
-const axiosInstance = axios.create({
-  baseURL: GLOBAL_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
 export const productList =
   (queries: { category?: string; page?: number; limit?: number } = {}) =>
   async (dispatch: AppDispatch) => {

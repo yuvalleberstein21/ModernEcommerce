@@ -13,9 +13,12 @@ import { RootState } from '../redux/store';
 import { productList } from '../redux/actions/productActions';
 import { useSearchParams } from 'react-router-dom';
 import LoaderAllProducts from '../components/LoaderAllProducts';
+import Pagination from '../utils/Pagination';
 
 const AllProducts = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [totalPages, setTotalPages] = useState(1);
+  const currentPage = Number(searchParams.get('page')) || 1;
   const dispatch = useAppDispatch();
   const {
     products = [],
@@ -25,13 +28,22 @@ const AllProducts = () => {
 
   useEffect(() => {
     const category = searchParams.get('category') || '';
-    const page = Number(searchParams.get('page')) || 1;
-    const limit = Number(searchParams.get('limit')) || 10;
+    const page = currentPage;
+    const limit = 6;
 
-    dispatch(productList({ category, page, limit }));
-  }, [dispatch, searchParams]);
+    dispatch(productList({ category, page, limit })).then((data) => {
+      setTotalPages(data.totalPages); // Assume the backend returns this
+    });
+  }, [dispatch, searchParams, currentPage]);
 
   console.log(products);
+
+  const handlePageChange = (page: number) => {
+    setSearchParams((prev) => {
+      prev.set('page', page.toString());
+      return prev;
+    });
+  };
 
   const [filters, setFilters] = useState({
     category: [],
@@ -120,6 +132,7 @@ const AllProducts = () => {
   return (
     // <div>products</div>
     <div className="container mx-auto px-4 py-8">
+      {!loading && products.length === 0 && <p>No products found.</p>}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold"> Products</h1>
 
@@ -251,53 +264,64 @@ const AllProducts = () => {
       ) : error ? (
         <div>{error}</div>
       ) : (
-        <div className="grid md:grid-cols-3 gap-6">
-          {products.map((product) => (
-            //   <div
-            //     key={product.id}
-            //     className="border rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow"
-            //   >
-            //     <img
-            //       src={product.image}
-            //       alt={product.name}
-            //       className="w-full h-48 object-cover"
-            //     />
-            //     <div className="p-4">
-            //       <div className="flex justify-between items-center mb-2">
-            //         <h3 className="text-xl font-semibold">{product.name}</h3>
-            //         <span className="text-blue-600 font-bold">
-            //           ${product.price.toFixed(2)}
-            //         </span>
-            //       </div>
-            //       <div className="flex justify-between items-center">
-            //         <div className="flex items-center">
-            //           {[1, 2, 3, 4, 5].map((star) => (
-            //             <Star
-            //               key={star}
-            //               size={16}
-            //               fill={star <= product.rating ? 'currentColor' : 'none'}
-            //               className="text-yellow-500"
-            //             />
-            //           ))}
-            //           <span className="ml-2 text-gray-600">({product.rating})</span>
-            //         </div>
-            //         <button
-            //           disabled={!product.inStock}
-            //           className={`flex items-center px-3 py-1 rounded ${
-            //             product.inStock
-            //               ? 'bg-blue-600 text-white hover:bg-blue-700'
-            //               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            //           }`}
-            //         >
-            //           <ShoppingCart size={16} className="mr-2" />
-            //           {product.inStock ? 'Add to Cart' : 'Out of Stock'}
-            //         </button>
-            //       </div>
-            //     </div>
-            //   </div>
-            <ProductCard product={product} key={product._id} />
-          ))}
-        </div>
+        <>
+          <div className="grid md:grid-cols-3 gap-6">
+            {products.map((product) => (
+              //   <div
+              //     key={product.id}
+              //     className="border rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow"
+              //   >
+              //     <img
+              //       src={product.image}
+              //       alt={product.name}
+              //       className="w-full h-48 object-cover"
+              //     />
+              //     <div className="p-4">
+              //       <div className="flex justify-between items-center mb-2">
+              //         <h3 className="text-xl font-semibold">{product.name}</h3>
+              //         <span className="text-blue-600 font-bold">
+              //           ${product.price.toFixed(2)}
+              //         </span>
+              //       </div>
+              //       <div className="flex justify-between items-center">
+              //         <div className="flex items-center">
+              //           {[1, 2, 3, 4, 5].map((star) => (
+              //             <Star
+              //               key={star}
+              //               size={16}
+              //               fill={star <= product.rating ? 'currentColor' : 'none'}
+              //               className="text-yellow-500"
+              //             />
+              //           ))}
+              //           <span className="ml-2 text-gray-600">({product.rating})</span>
+              //         </div>
+              //         <button
+              //           disabled={!product.inStock}
+              //           className={`flex items-center px-3 py-1 rounded ${
+              //             product.inStock
+              //               ? 'bg-blue-600 text-white hover:bg-blue-700'
+              //               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              //           }`}
+              //         >
+              //           <ShoppingCart size={16} className="mr-2" />
+              //           {product.inStock ? 'Add to Cart' : 'Out of Stock'}
+              //         </button>
+              //       </div>
+              //     </div>
+              //   </div>
+              <ProductCard product={product} key={product._id} />
+            ))}
+          </div>
+          {totalPages > 1 && (
+            <div className="mt-5">
+              <Pagination
+                totalPages={totalPages}
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
+        </>
       )}
 
       {products.length === 0 && (

@@ -42,10 +42,12 @@ const CategoriesCards: React.FC = () => {
   if (error) return <p>Error: {error}</p>;
   if (!Array.isArray(categories)) return <p>No categories available.</p>;
   return (
-    <div className="grid md:grid-cols-3 lg:grid-cols-3 grid-cols-1 gap-4 mt-6">
+    <div className="grid md:grid-cols-3 lg:grid-cols-3 grid-cols-1 gap-6 mt-6">
       {categories.map((category: Category) => (
         <Link
-          to={`products?category=${encodeURIComponent(category.category)}`}
+          to={`products?category=${encodeURIComponent(
+            category.category
+          )}&page=1&limit=6`}
           key={category.category}
         >
           <div className="relative overflow-hidden rounded-lg shadow-md transition-transform duration-300 hover:scale-105">
