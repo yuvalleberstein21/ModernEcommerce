@@ -11,8 +11,6 @@ const Navbar = () => {
 
   const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
-  console.log(cartItems);
-
   const openModal = () => {
     setIsModalOpen(true);
   };

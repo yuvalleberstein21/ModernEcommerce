@@ -1,5 +1,12 @@
 // import { PayloadAction } from "@reduxjs/toolkit";
 import {
+  CATEGORIES_LIST_FAIL,
+  CATEGORIES_LIST_REQUEST,
+  CATEGORIES_LIST_SUCCESS,
+  PRODUCT_CREATE_FAIL,
+  PRODUCT_CREATE_REQUEST,
+  PRODUCT_CREATE_RESET,
+  PRODUCT_CREATE_SUCCESS,
   PRODUCT_LIST_FAIL,
   PRODUCT_LIST_REQUEST,
   PRODUCT_LIST_SUCCESS,
@@ -7,6 +14,12 @@ import {
   SINGLE_PRODUCT_REQUEST,
   SINGLE_PRODUCT_SUCCESS,
 } from '../constant/ProductConstant';
+
+const initialState = {
+  categories: [],
+  loading: false,
+  error: null,
+};
 
 export const productListReducer = (
   state = { product: { reviews: [] }, loading: false, error: null },
@@ -36,6 +49,54 @@ export const singleProductReducer = (
       return { loading: false, product: action.payload, error: null };
     case SINGLE_PRODUCT_FAIL:
       return { loading: false, error: action.payload, product: null }; // Clear product on error
+    default:
+      return state;
+  }
+};
+
+// CATEGORIES
+export const categoriesListReducer = (state = initialState, action: any) => {
+  switch (action.type) {
+    case CATEGORIES_LIST_REQUEST:
+      return { ...state, loading: true, error: null };
+    case CATEGORIES_LIST_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        categories: action.payload, // Adjust based on the backend response
+        error: null,
+      };
+    case CATEGORIES_LIST_FAIL:
+      return { ...state, loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};
+
+export const createProductReducer = (
+  state = { product: {}, loading: false, error: null, success: false },
+  action: any
+) => {
+  switch (action.type) {
+    case PRODUCT_CREATE_REQUEST:
+      return { ...state, loading: true, error: null, success: false };
+    case PRODUCT_CREATE_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        product: action.payload,
+        success: true,
+        error: null,
+      };
+    case PRODUCT_CREATE_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+        success: false,
+      };
+    case PRODUCT_CREATE_RESET:
+      return { product: {}, loading: false, error: null, success: false };
     default:
       return state;
   }

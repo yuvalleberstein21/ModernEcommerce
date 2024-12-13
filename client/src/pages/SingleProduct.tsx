@@ -19,10 +19,10 @@ const SingleProduct: React.FC = () => {
 
   useEffect(() => {
     // Only fetch if no product is loaded or product ID is different
-    if (!product?.product || product.product._id !== productId) {
-      dispatch(singleProductDetails(productId));
-    }
-  }, [dispatch, productId, product]);
+    dispatch(singleProductDetails(productId));
+  }, [dispatch, productId]);
+
+  console.log('product :', product);
 
   return (
     <div className="container">

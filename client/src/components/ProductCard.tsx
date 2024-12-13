@@ -7,6 +7,7 @@ interface ProductCardProps {
   product: Product;
 }
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  console.log('product card page', product);
   return (
     <div className="card bg-gray-100 p-3 rounded-lg">
       <span>

@@ -6,6 +6,7 @@ import SingleProduct from './pages/SingleProduct';
 import AllProducts from './pages/AllProducts';
 import Cart from './pages/Cart';
 import CheckOut from './pages/CheckOut';
+import CreateProductForm from './components/CreateProductForm';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route index path="/" element={<Home />} />
         <Route path="product/:productId" element={<SingleProduct />} />
         <Route path="products" element={<AllProducts />} />
+        <Route path="admin/createProduct" element={<CreateProductForm />} />
         <Route path="cart" element={<Cart />} />
         <Route path="checkout" element={<CheckOut />} />
       </Routes>

@@ -11,6 +11,8 @@ import {
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import {
+  categoriesListReducer,
+  createProductReducer,
   productListReducer,
   singleProductReducer,
 } from './reducers/productsReducer';
@@ -19,7 +21,9 @@ import { cartReducer } from './reducers/cartReducer';
 // Create the root reducer
 const rootReducer = combineReducers({
   products: productListReducer,
+  categories: categoriesListReducer,
   product: singleProductReducer,
+  createProduct: createProductReducer,
   cart: cartReducer,
 });
 

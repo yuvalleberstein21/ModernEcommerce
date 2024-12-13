@@ -1,6 +1,8 @@
 import Chair1 from '../assets/chair6.png';
 import Chair2 from '../assets/chairCategory2.png';
-import PopularItems from '../components/Home/PopularItems';
+import CategoriesCards from '../components/Home/CategoriesCards';
+import Title from '../components/Title';
+
 const Categories = () => {
   return (
     <div className="w-full">
@@ -45,7 +47,10 @@ const Categories = () => {
         </div>
       </div>
       {/* Popular Items */}
-      <PopularItems />
+      <div className="container h-full">
+        <Title title="COLLECTION" />
+        <CategoriesCards />
+      </div>
     </div>
   );
 };

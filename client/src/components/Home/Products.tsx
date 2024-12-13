@@ -14,10 +14,8 @@ const Products: React.FC = () => {
   );
 
   useEffect(() => {
-    if (!products || products.length === 0) {
-      dispatch(productList());
-    }
-  }, [dispatch, products]);
+    dispatch(productList());
+  }, [dispatch]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;

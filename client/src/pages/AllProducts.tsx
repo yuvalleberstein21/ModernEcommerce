@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   Filter,
   ShoppingCart,
@@ -8,65 +8,31 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
+import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
+import { RootState } from '../redux/store';
+import { productList } from '../redux/actions/productActions';
+import { useSearchParams } from 'react-router-dom';
+import LoaderAllProducts from '../components/LoaderAllProducts';
 
 const AllProducts = () => {
-  const products = [
-    {
-      id: 1,
-      name: 'Modern Leather Sofa',
-      price: 1299.99,
-      category: 'Sofas',
-      brand: 'Urban Living',
-      rating: 4.5,
-      color: 'Brown',
-      inStock: true,
-      image: '/api/placeholder/300/200',
-    },
-    {
-      id: 2,
-      name: 'Minimalist Dining Table',
-      price: 799.5,
-      category: 'Tables',
-      brand: 'Nordic Design',
-      rating: 4.7,
-      color: 'White',
-      inStock: true,
-      image: '/api/placeholder/300/200',
-    },
-    {
-      id: 3,
-      name: 'Ergonomic Office Chair',
-      price: 349.99,
-      category: 'Chairs',
-      brand: 'WorkPro',
-      rating: 4.2,
-      color: 'Black',
-      inStock: false,
-      image: '/api/placeholder/300/200',
-    },
-    {
-      id: 4,
-      name: 'Classic Wooden Bookshelf',
-      price: 599.0,
-      category: 'Storage',
-      brand: 'Timber Craft',
-      rating: 4.6,
-      color: 'Oak',
-      inStock: true,
-      image: '/api/placeholder/300/200',
-    },
-    {
-      id: 5,
-      name: 'Scandinavian Armchair',
-      price: 449.99,
-      category: 'Chairs',
-      brand: 'Nordic Living',
-      rating: 4.8,
-      color: 'Gray',
-      inStock: true,
-      image: '/api/placeholder/300/200',
-    },
-  ];
+  const [searchParams] = useSearchParams();
+  const dispatch = useAppDispatch();
+  const {
+    products = [],
+    loading,
+    error,
+  } = useAppSelector((state: RootState) => state.products);
+
+  useEffect(() => {
+    const category = searchParams.get('category') || '';
+    const page = Number(searchParams.get('page')) || 1;
+    const limit = Number(searchParams.get('limit')) || 10;
+
+    dispatch(productList({ category, page, limit }));
+  }, [dispatch, searchParams]);
+
+  console.log(products);
+
   const [filters, setFilters] = useState({
     category: [],
     brand: [],
@@ -79,7 +45,7 @@ const AllProducts = () => {
   const [sortBy, setSortBy] = useState('default');
   const [showFilters, setShowFilters] = useState(false);
 
-  // Derived filter options
+  // // Derived filter options
   const filterOptions = useMemo(
     () => ({
       categories: [...new Set(products.map((p) => p.category))],
@@ -88,66 +54,74 @@ const AllProducts = () => {
     [products]
   );
 
-  // Filter and sort products
-  const filteredProducts = useMemo(() => {
-    return products
-      .filter((product) => {
-        const categoryMatch =
-          filters.category.length === 0 ||
-          filters.category.includes(product.category);
+  if (!products.length) {
+    return <p>No products found.</p>;
+  }
 
-        const brandMatch =
-          filters.brand.length === 0 || filters.brand.includes(product.brand);
+  // if (loading) return <p>Loading...</p>;
+  // if (error) return <p>Error: {error}</p>;
 
-        const priceMatch =
-          product.price >= filters.minPrice &&
-          product.price <= filters.maxPrice;
+  // // Filter and sort products
+  // const filteredProducts = useMemo(() => {
+  //   return products
+  //     .filter((product) => {
+  //       const categoryMatch =
+  //         filters.category.length === 0 ||
+  //         filters.category.includes(product.category);
 
-        const stockMatch = !filters.inStock || product.inStock;
+  //       const brandMatch =
+  //         filters.brand.length === 0 || filters.brand.includes(product.brand);
 
-        const ratingMatch = product.rating >= filters.rating;
+  //       const priceMatch =
+  //         product.price >= filters.minPrice &&
+  //         product.price <= filters.maxPrice;
 
-        return (
-          categoryMatch && brandMatch && priceMatch && stockMatch && ratingMatch
-        );
-      })
-      .sort((a, b) => {
-        switch (sortBy) {
-          case 'priceAsc':
-            return a.price - b.price;
-          case 'priceDesc':
-            return b.price - a.price;
-          case 'ratingDesc':
-            return b.rating - a.rating;
-          default:
-            return 0;
-        }
-      });
-  }, [products, filters, sortBy]);
+  //       const stockMatch = !filters.inStock || product.inStock;
 
-  // Filter update handlers
-  const updateCategoryFilter = (category) => {
-    setFilters((prev) => ({
-      ...prev,
-      category: prev.category.includes(category)
-        ? prev.category.filter((c) => c !== category)
-        : [...prev.category, category],
-    }));
-  };
+  //       const ratingMatch = product.rating >= filters.rating;
 
-  const updateBrandFilter = (brand) => {
-    setFilters((prev) => ({
-      ...prev,
-      brand: prev.brand.includes(brand)
-        ? prev.brand.filter((b) => b !== brand)
-        : [...prev.brand, brand],
-    }));
-  };
+  //       return (
+  //         categoryMatch && brandMatch && priceMatch && stockMatch && ratingMatch
+  //       );
+  //     })
+  //     .sort((a, b) => {
+  //       switch (sortBy) {
+  //         case 'priceAsc':
+  //           return a.price - b.price;
+  //         case 'priceDesc':
+  //           return b.price - a.price;
+  //         case 'ratingDesc':
+  //           return b.rating - a.rating;
+  //         default:
+  //           return 0;
+  //       }
+  //     });
+  // }, [products, filters, sortBy]);
+
+  // // Filter update handlers
+  // const updateCategoryFilter = (category) => {
+  //   setFilters((prev) => ({
+  //     ...prev,
+  //     category: prev.category.includes(category)
+  //       ? prev.category.filter((c) => c !== category)
+  //       : [...prev.category, category],
+  //   }));
+  // };
+
+  // const updateBrandFilter = (brand) => {
+  //   setFilters((prev) => ({
+  //     ...prev,
+  //     brand: prev.brand.includes(brand)
+  //       ? prev.brand.filter((b) => b !== brand)
+  //       : [...prev.brand, brand],
+  //   }));
+  // };
 
   return (
+    // <div>products</div>
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Our Products</h1>
+        <h1 className="text-3xl font-bold"> Products</h1>
 
         {/* Sort & Filter Controls */}
         <div className="flex space-x-4">
@@ -172,8 +146,6 @@ const AllProducts = () => {
           </button>
         </div>
       </div>
-
-      {/* Expandable Filters */}
       {showFilters && (
         <div className="grid md:grid-cols-4 gap-4 mb-6 bg-gray-50 p-4 rounded">
           {/* Category Filter */}
@@ -274,58 +246,61 @@ const AllProducts = () => {
           </div>
         </div>
       )}
+      {loading ? (
+        <LoaderAllProducts />
+      ) : error ? (
+        <div>{error}</div>
+      ) : (
+        <div className="grid md:grid-cols-3 gap-6">
+          {products.map((product) => (
+            //   <div
+            //     key={product.id}
+            //     className="border rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow"
+            //   >
+            //     <img
+            //       src={product.image}
+            //       alt={product.name}
+            //       className="w-full h-48 object-cover"
+            //     />
+            //     <div className="p-4">
+            //       <div className="flex justify-between items-center mb-2">
+            //         <h3 className="text-xl font-semibold">{product.name}</h3>
+            //         <span className="text-blue-600 font-bold">
+            //           ${product.price.toFixed(2)}
+            //         </span>
+            //       </div>
+            //       <div className="flex justify-between items-center">
+            //         <div className="flex items-center">
+            //           {[1, 2, 3, 4, 5].map((star) => (
+            //             <Star
+            //               key={star}
+            //               size={16}
+            //               fill={star <= product.rating ? 'currentColor' : 'none'}
+            //               className="text-yellow-500"
+            //             />
+            //           ))}
+            //           <span className="ml-2 text-gray-600">({product.rating})</span>
+            //         </div>
+            //         <button
+            //           disabled={!product.inStock}
+            //           className={`flex items-center px-3 py-1 rounded ${
+            //             product.inStock
+            //               ? 'bg-blue-600 text-white hover:bg-blue-700'
+            //               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            //           }`}
+            //         >
+            //           <ShoppingCart size={16} className="mr-2" />
+            //           {product.inStock ? 'Add to Cart' : 'Out of Stock'}
+            //         </button>
+            //       </div>
+            //     </div>
+            //   </div>
+            <ProductCard product={product} key={product._id} />
+          ))}
+        </div>
+      )}
 
-      {/* Products Grid */}
-      <div className="grid md:grid-cols-3 gap-6">
-        {filteredProducts.map((product) => (
-          //   <div
-          //     key={product.id}
-          //     className="border rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow"
-          //   >
-          //     <img
-          //       src={product.image}
-          //       alt={product.name}
-          //       className="w-full h-48 object-cover"
-          //     />
-          //     <div className="p-4">
-          //       <div className="flex justify-between items-center mb-2">
-          //         <h3 className="text-xl font-semibold">{product.name}</h3>
-          //         <span className="text-blue-600 font-bold">
-          //           ${product.price.toFixed(2)}
-          //         </span>
-          //       </div>
-          //       <div className="flex justify-between items-center">
-          //         <div className="flex items-center">
-          //           {[1, 2, 3, 4, 5].map((star) => (
-          //             <Star
-          //               key={star}
-          //               size={16}
-          //               fill={star <= product.rating ? 'currentColor' : 'none'}
-          //               className="text-yellow-500"
-          //             />
-          //           ))}
-          //           <span className="ml-2 text-gray-600">({product.rating})</span>
-          //         </div>
-          //         <button
-          //           disabled={!product.inStock}
-          //           className={`flex items-center px-3 py-1 rounded ${
-          //             product.inStock
-          //               ? 'bg-blue-600 text-white hover:bg-blue-700'
-          //               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          //           }`}
-          //         >
-          //           <ShoppingCart size={16} className="mr-2" />
-          //           {product.inStock ? 'Add to Cart' : 'Out of Stock'}
-          //         </button>
-          //       </div>
-          //     </div>
-          //   </div>
-          <ProductCard key={product.id} />
-        ))}
-      </div>
-
-      {/* No Products Found */}
-      {filteredProducts.length === 0 && (
+      {products.length === 0 && (
         <div className="text-center py-10 bg-gray-100 rounded">
           <RefreshCcw size={48} className="mx-auto mb-4 text-gray-500" />
           <p className="text-xl text-gray-600">
