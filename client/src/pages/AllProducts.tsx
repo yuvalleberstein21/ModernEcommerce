@@ -24,6 +24,7 @@ const AllProducts = () => {
     products = [],
     loading,
     error,
+    totalPages: reduxTotalPages = 1, // Add this from the Redux state
   } = useAppSelector((state: RootState) => state.products);
 
   useEffect(() => {
@@ -35,6 +36,10 @@ const AllProducts = () => {
       setTotalPages(data.totalPages); // Assume the backend returns this
     });
   }, [dispatch, searchParams, currentPage]);
+
+  useEffect(() => {
+    setTotalPages(reduxTotalPages);
+  }, [reduxTotalPages]);
 
   console.log(products);
 

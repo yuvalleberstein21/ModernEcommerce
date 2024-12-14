@@ -1,14 +1,23 @@
 // import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
 // import { login } from '../redux/store/slices/authSlice';
 import { useState } from 'react';
+import { login } from '../redux/actions/authActions';
+import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
+import { RootState } from '../redux/store';
 
 const Login = ({ onClose }) => {
+  const dispatch = useAppDispatch();
+  const { error, loading, userInfo } = useAppSelector(
+    (state: RootState) => state.userInfo
+  );
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     username: '',
   });
+
+  console.log(userInfo);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,23 +29,24 @@ const Login = ({ onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add your login/signup logic here
-    console.log(isLogin ? 'Login' : 'Signup', formData);
-    onClose(); // Close modal after submission
+    console.log('Login form', formData);
+    try {
+      dispatch(login(formData.email, formData.password));
+      if (!error) {
+        onClose();
+      }
+    } catch (error) {
+      console.log('Error in handleSubmit:', error);
+    }
   };
   const toggleForm = () => {
     setIsLogin(!isLogin);
   };
-  // const dispatch = useAppDispatch();
-  // const user = useAppSelector((state) => state.auth.user);
 
-  // const handleLogin = () => {
-  //   const userData = { name: 'John Doe', email: 'john@example.com' };
-  //   const token = 'fake-jwt-token';
-  //   dispatch(login({ user: userData, token }));
-  // };
   return (
     <div className="fixed inset-[-1rem] z-50 min-w-screen flex items-center justify-center bg-black bg-opacity-50">
+      {loading && <div>Loading...</div>}
+      {error && <div className="text-red-600">{error.message}</div>}
       <div className="bg-white rounded-lg shadow-xl w-96 items-center mx-4 mr-8 p-8 relative">
         <div className="absolute top-4 right-4">
           <button
@@ -62,7 +72,7 @@ const Login = ({ onClose }) => {
               </label>
               <input
                 type="text"
-                name="username"
+                name="name"
                 value={formData.username}
                 onChange={handleChange}
                 required={!isLogin}
@@ -70,7 +80,6 @@ const Login = ({ onClose }) => {
               />
             </div>
           )}
-
           <div>
             <label
               htmlFor="email"

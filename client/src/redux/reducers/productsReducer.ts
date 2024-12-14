@@ -1,4 +1,5 @@
 // import { PayloadAction } from "@reduxjs/toolkit";
+import { Product } from '../../Types';
 import {
   CATEGORIES_LIST_FAIL,
   CATEGORIES_LIST_REQUEST,
@@ -15,6 +16,24 @@ import {
   SINGLE_PRODUCT_SUCCESS,
 } from '../constant/ProductConstant';
 
+interface ProductState {
+  products: Product[];
+  loading: boolean;
+  error: string | null;
+  total?: number;
+  totalPages?: number;
+  currentPage?: number;
+}
+
+const productInitialState: ProductState = {
+  products: [],
+  loading: false,
+  error: null,
+  total: 0,
+  totalPages: 1,
+  currentPage: 1,
+};
+
 const initialState = {
   categories: [],
   loading: false,
@@ -22,16 +41,28 @@ const initialState = {
 };
 
 export const productListReducer = (
-  state = { product: { reviews: [] }, loading: false, error: null },
+  state = productInitialState,
   action: any
 ) => {
   switch (action.type) {
     case PRODUCT_LIST_REQUEST:
-      return { ...state, loading: true, error: null };
+      return { ...state, loading: true };
     case PRODUCT_LIST_SUCCESS:
-      return { ...state, loading: false, products: action.payload.products };
+      return {
+        ...state,
+        loading: false,
+        products: action.payload.products,
+        total: action.payload.total,
+        totalPages: action.payload.totalPages,
+        currentPage: action.payload.page,
+      };
     case PRODUCT_LIST_FAIL:
-      return { ...state, loading: false, error: action.payload };
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+        products: [],
+      };
     default:
       return state;
   }

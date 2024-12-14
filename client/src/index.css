@@ -3,6 +3,9 @@
 @tailwind components;
 @tailwind utilities;
 
+::selection {
+  background-color: transparent; /* Disable */
+}
 * {
   margin: 0;
   padding: 0;

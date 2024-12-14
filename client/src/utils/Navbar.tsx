@@ -3,11 +3,14 @@ import { ShoppingCart, Menu, X, User, Search, Heart } from 'lucide-react';
 import Login from '../pages/Login';
 import { useAppSelector } from '../hooks/reduxHooks';
 import { RootState } from '../redux/store';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const cartItems = useAppSelector((state: RootState) => state.cart?.cartItems);
+  const { userInfo } = useAppSelector((state: RootState) => state.userInfo);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -21,6 +24,10 @@ const Navbar = () => {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen((prev) => !prev);
   };
 
   const navLinks = [
@@ -78,13 +85,40 @@ const Navbar = () => {
                 </span>
               </a>
 
-              <span
-                onClick={openModal}
-                className="text-gray-700 hover:text-blue-600"
-              >
-                <User size={24} />
-              </span>
-              {isModalOpen && <Login onClose={closeModal} />}
+              {!userInfo ? (
+                <>
+                  <span
+                    onClick={openModal}
+                    className="text-gray-700 hover:text-blue-600"
+                  >
+                    <User size={24} />
+                  </span>
+                  {isModalOpen && <Login onClose={closeModal} />}
+                </>
+              ) : (
+                <div
+                  className="cursor-pointer text-gray-700 hover:text-blue-600"
+                  onClick={toggleDropdown}
+                >
+                  <User size={24} />
+                  {isDropdownOpen && (
+                    <div className="absolute right-0 w-48 bg-white shadow-md rounded-lg mx-5 mt-8">
+                      <Link
+                        to="/profile"
+                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+                      >
+                        Profile
+                      </Link>
+                      <button
+                        // onClick={handleLogout}
+                        className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Mobile Menu Button */}
               <div className="md:hidden">

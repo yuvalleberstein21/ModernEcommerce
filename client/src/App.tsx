@@ -7,6 +7,7 @@ import AllProducts from './pages/AllProducts';
 import Cart from './pages/Cart';
 import CheckOut from './pages/CheckOut';
 import CreateProductForm from './components/CreateProductForm';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="admin/createProduct" element={<CreateProductForm />} />
         <Route path="cart" element={<Cart />} />
         <Route path="checkout" element={<CheckOut />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
     </BrowserRouter>

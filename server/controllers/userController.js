@@ -12,20 +12,20 @@ const loginUser = async (req, res) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({ message: 'אנא ספק שם משתמש וסיסמא' });
+            return res.status(400).json({ message: 'Please fill the following fields' });
         }
 
         const user = await User.findOne({ email });
         console.log(user)
 
         if (!user) {
-            return res.status(401).json({ message: 'שם משתמש או סיסמא אינם נכונים' });
+            return res.status(401).json({ message: 'Email or Password Are Incorrect' });
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
-            return res.status(401).json({ message: 'שם משתמש או סיסמא אינם נכונים' });
+            return res.status(401).json({ message: 'Email or Password Are Incorrect' });
         }
 
         const token = jwt.sign(
@@ -35,7 +35,7 @@ const loginUser = async (req, res) => {
         );
 
         res.status(200).json({
-            message: 'התחברת בהצלחה',
+            message: 'Login Success',
             token,
             user: { _id: user.id, name: user.name, email: user.email, role: user.role, createdAt: user.createdAt },
         });

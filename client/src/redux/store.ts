@@ -17,6 +17,7 @@ import {
   singleProductReducer,
 } from './reducers/productsReducer';
 import { cartReducer } from './reducers/cartReducer';
+import { userLoginReducer } from './reducers/authReducer';
 
 // Create the root reducer
 const rootReducer = combineReducers({
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
   product: singleProductReducer,
   createProduct: createProductReducer,
   cart: cartReducer,
+  userInfo: userLoginReducer,
 });
 
 // Persist configuration
