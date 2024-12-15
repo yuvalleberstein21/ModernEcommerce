@@ -1,6 +1,6 @@
 import { CART_ADD_ITEM, CART_REMOVE_ITEM } from '../constant/CartConstant';
 import { AppDispatch, RootState } from '../store';
-import { CartItem } from '../../Types';
+import { CartItem } from '../../Types/CartInterface';
 
 export const addToCart =
   (product: CartItem, qty: number = 1) =>
@@ -15,12 +15,14 @@ export const addToCart =
 
     if (existingCartItem) {
       // If the item exists, increment its quantity
+      const updatedItem = {
+        ...product,
+        quantity: existingCartItem.quantity + qty, // Increment by qty
+      };
+
       dispatch({
         type: CART_ADD_ITEM,
-        payload: {
-          ...product,
-          quantity: existingCartItem.quantity + 1,
-        },
+        payload: updatedItem,
       });
     } else {
       // If it's a new item, add it to the cart with the specified quantity

@@ -78,12 +78,17 @@ const Cart = () => {
   // Calculate totals
   const cartSummary = useMemo(() => {
     const totalPrice = cartItems.reduce((total: number, item) => {
-      const price = Number(item.price); // Convert to number
-      const quantity = Number(item.quantity); // Convert to number
+      const price = Number(item.price); // Ensure it's a number
+      const quantity = Number(item.quantity); // Ensure it's a number
       return total + price * quantity;
     }, 0);
 
-    return totalPrice;
+    const totalItems = cartItems.reduce(
+      (total: number, item) => total + item.quantity,
+      0
+    );
+
+    return { totalPrice, totalItems };
   }, [cartItems]);
 
   const removeFromCartHandle = (id: string) => {
@@ -187,7 +192,7 @@ const Cart = () => {
               {/* Total */}
               <div className="flex justify-between font-bold text-lg border-t pt-2 mt-2">
                 <span>Total</span>
-                <span>${cartSummary.toFixed(2)}</span>
+                <span>${cartSummary.totalPrice.toFixed(2)}</span>
               </div>
 
               {/* Coupon Input */}

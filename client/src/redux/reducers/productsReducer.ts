@@ -1,6 +1,12 @@
 // import { PayloadAction } from "@reduxjs/toolkit";
 import { Product } from '../../Types';
 import {
+  CategoriesState,
+  CreateProductState,
+  ProductState,
+  SingleProductState,
+} from '../../Types/ProductsInterface';
+import {
   CATEGORIES_LIST_FAIL,
   CATEGORIES_LIST_REQUEST,
   CATEGORIES_LIST_SUCCESS,
@@ -16,15 +22,7 @@ import {
   SINGLE_PRODUCT_SUCCESS,
 } from '../constant/ProductConstant';
 
-interface ProductState {
-  products: Product[];
-  loading: boolean;
-  error: string | null;
-  total?: number;
-  totalPages?: number;
-  currentPage?: number;
-}
-
+// Initial States
 const productInitialState: ProductState = {
   products: [],
   loading: false,
@@ -34,16 +32,30 @@ const productInitialState: ProductState = {
   currentPage: 1,
 };
 
-const initialState = {
+const singleProductInitialState: SingleProductState = {
+  product: null,
+  loading: false,
+  error: null,
+};
+
+const categoriesInitialState: CategoriesState = {
   categories: [],
   loading: false,
   error: null,
 };
 
+const createProductInitialState: CreateProductState = {
+  product: null,
+  loading: false,
+  error: null,
+  success: false,
+};
+
+// Reducers
 export const productListReducer = (
   state = productInitialState,
   action: any
-) => {
+): ProductState => {
   switch (action.type) {
     case PRODUCT_LIST_REQUEST:
       return { ...state, loading: true };
@@ -57,46 +69,37 @@ export const productListReducer = (
         currentPage: action.payload.page,
       };
     case PRODUCT_LIST_FAIL:
-      return {
-        ...state,
-        loading: false,
-        error: action.payload,
-        products: [],
-      };
+      return { ...state, loading: false, error: action.payload, products: [] };
     default:
       return state;
   }
 };
 
-// SINGLE PRODUCT
 export const singleProductReducer = (
-  state = { product: { reviews: [] }, loading: false, error: null },
-  action
-) => {
+  state = singleProductInitialState,
+  action: any
+): SingleProductState => {
   switch (action.type) {
     case SINGLE_PRODUCT_REQUEST:
-      return { ...state, loading: true, product: null, error: null }; // Clear product
+      return { ...state, loading: true, product: null };
     case SINGLE_PRODUCT_SUCCESS:
-      return { loading: false, product: action.payload, error: null };
+      return { ...state, loading: false, product: action.payload };
     case SINGLE_PRODUCT_FAIL:
-      return { loading: false, error: action.payload, product: null }; // Clear product on error
+      return { ...state, loading: false, error: action.payload, product: null };
     default:
       return state;
   }
 };
 
-// CATEGORIES
-export const categoriesListReducer = (state = initialState, action: any) => {
+export const categoriesListReducer = (
+  state = categoriesInitialState,
+  action: any
+): CategoriesState => {
   switch (action.type) {
     case CATEGORIES_LIST_REQUEST:
-      return { ...state, loading: true, error: null };
+      return { ...state, loading: true };
     case CATEGORIES_LIST_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        categories: action.payload, // Adjust based on the backend response
-        error: null,
-      };
+      return { ...state, loading: false, categories: action.payload };
     case CATEGORIES_LIST_FAIL:
       return { ...state, loading: false, error: action.payload };
     default:
@@ -105,19 +108,18 @@ export const categoriesListReducer = (state = initialState, action: any) => {
 };
 
 export const createProductReducer = (
-  state = { product: {}, loading: false, error: null, success: false },
+  state = createProductInitialState,
   action: any
-) => {
+): CreateProductState => {
   switch (action.type) {
     case PRODUCT_CREATE_REQUEST:
-      return { ...state, loading: true, error: null, success: false };
+      return { ...state, loading: true, success: false };
     case PRODUCT_CREATE_SUCCESS:
       return {
         ...state,
         loading: false,
         product: action.payload,
         success: true,
-        error: null,
       };
     case PRODUCT_CREATE_FAIL:
       return {
@@ -127,7 +129,7 @@ export const createProductReducer = (
         success: false,
       };
     case PRODUCT_CREATE_RESET:
-      return { product: {}, loading: false, error: null, success: false };
+      return createProductInitialState;
     default:
       return state;
   }

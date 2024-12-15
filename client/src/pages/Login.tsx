@@ -1,44 +1,43 @@
 // import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
 // import { login } from '../redux/store/slices/authSlice';
-import { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { clearLoginError, login } from '../redux/actions/authActions';
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
 import { RootState } from '../redux/store';
 
-const Login = ({ onClose }) => {
+interface FormData {
+  name?: string;
+  email: string;
+  password: string;
+  confirmPassword?: string;
+}
+const Login = ({ onClose }: { onClose: () => void }) => {
   const dispatch = useAppDispatch();
   const { error, loading, userInfo } = useAppSelector(
     (state: RootState) => state.userInfo
   );
-  const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    username: '',
-  });
+  const [isLogin, setIsLogin] = React.useState(true);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<FormData>();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
+  const toggleForm = () => setIsLogin(!isLogin);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    await dispatch(login(formData.email, formData.password));
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    if (isLogin) {
+      await dispatch(login(data.email, data.password));
+    }
     if (userInfo) {
       onClose();
     }
   };
-
   useEffect(() => {
     dispatch(clearLoginError());
   }, [dispatch]);
-  const toggleForm = () => {
-    setIsLogin(!isLogin);
-  };
 
   return (
     <div className="fixed inset-[-1rem] z-50 min-w-screen flex items-center justify-center bg-black bg-opacity-50">
@@ -56,24 +55,28 @@ const Login = ({ onClose }) => {
           {isLogin ? 'Login' : 'Sign Up'}
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {error && <div className="text-red-500 text-sm">{error}</div>}
           {!isLogin && (
             <div>
               <label
-                htmlFor="username"
+                htmlFor="name"
                 className="block text-sm font-medium text-gray-700"
               >
-                Username
+                Full name
               </label>
               <input
                 type="text"
-                name="name"
-                value={formData.username}
-                onChange={handleChange}
+                {...register('name', { required: !isLogin })}
+                // onChange={handleChange}
                 required={!isLogin}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               />
+              {errors.name && (
+                <p className="text-red-500 text-xs mt-1">
+                  Full name is required.
+                </p>
+              )}
             </div>
           )}
           <div>
@@ -85,12 +88,15 @@ const Login = ({ onClose }) => {
             </label>
             <input
               type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
+              // value={formData.email}
+              // onChange={handleChange}
+              {...register('email', { required: true })}
               required
               className="mt-1 block w-full p-1 rounded-md outline-none shadow-sm text-md px-2"
             />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">Email is required.</p>
+            )}
           </div>
 
           <div>
@@ -102,12 +108,17 @@ const Login = ({ onClose }) => {
             </label>
             <input
               type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
+              // value={formData.password}
+              // onChange={handleChange}
+              {...register('password', { required: true, minLength: 6 })}
               required
               className="mt-1 block w-full p-1 rounded-md outline-none shadow-sm text-md px-2"
             />
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">
+                Password must be at least 6 characters.
+              </p>
+            )}
           </div>
 
           {!isLogin && (
@@ -120,10 +131,19 @@ const Login = ({ onClose }) => {
               </label>
               <input
                 type="password"
-                name="confirmPassword"
-                required={!isLogin}
+                id="confirmPassword"
+                {...register('confirmPassword', {
+                  required: !isLogin,
+                  validate: (value) =>
+                    value === watch('password') || 'Passwords do not match.',
+                })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               />
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
             </div>
           )}
           <div>
