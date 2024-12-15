@@ -10,10 +10,12 @@ import {
   Percent,
 } from 'lucide-react';
 
-import { useAppSelector } from '../hooks/reduxHooks';
+import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
 import { RootState } from '../redux/store';
 import { CartItem } from '../Types';
+import { removeFromCart } from '../redux/actions/cartActions';
 const Cart = () => {
+  const dispatch = useAppDispatch();
   const cartItems = useAppSelector((state: RootState) => state.cart?.cartItems);
 
   // Initial cart items
@@ -84,6 +86,10 @@ const Cart = () => {
     return totalPrice;
   }, [cartItems]);
 
+  const removeFromCartHandle = (id: string) => {
+    dispatch(removeFromCart(id));
+  };
+
   return (
     <div className="container">
       <div className="mx-auto px-4 py-8">
@@ -146,7 +152,7 @@ const Cart = () => {
                   </div>
 
                   <button
-                    // onClick={() => removeItem(item.id)}
+                    onClick={() => removeFromCartHandle(item.product)}
                     className="text-red-500 hover:text-red-700"
                   >
                     <Trash2 />

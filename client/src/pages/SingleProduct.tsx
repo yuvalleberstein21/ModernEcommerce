@@ -18,11 +18,10 @@ const SingleProduct: React.FC = () => {
   );
 
   useEffect(() => {
-    // Only fetch if no product is loaded or product ID is different
-    dispatch(singleProductDetails(productId));
+    if (productId) {
+      dispatch(singleProductDetails(productId));
+    }
   }, [dispatch, productId]);
-
-  console.log('product :', product);
 
   return (
     <div className="container">

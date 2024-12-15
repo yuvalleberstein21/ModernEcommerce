@@ -1,7 +1,7 @@
 // import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
 // import { login } from '../redux/store/slices/authSlice';
-import { useState } from 'react';
-import { login } from '../redux/actions/authActions';
+import { useEffect, useState } from 'react';
+import { clearLoginError, login } from '../redux/actions/authActions';
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
 import { RootState } from '../redux/store';
 
@@ -17,8 +17,6 @@ const Login = ({ onClose }) => {
     username: '',
   });
 
-  console.log(userInfo);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -27,26 +25,23 @@ const Login = ({ onClose }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login form', formData);
-    try {
-      dispatch(login(formData.email, formData.password));
-      if (!error) {
-        onClose();
-      }
-    } catch (error) {
-      console.log('Error in handleSubmit:', error);
+    await dispatch(login(formData.email, formData.password));
+    if (userInfo) {
+      onClose();
     }
   };
+
+  useEffect(() => {
+    dispatch(clearLoginError());
+  }, [dispatch]);
   const toggleForm = () => {
     setIsLogin(!isLogin);
   };
 
   return (
     <div className="fixed inset-[-1rem] z-50 min-w-screen flex items-center justify-center bg-black bg-opacity-50">
-      {loading && <div>Loading...</div>}
-      {error && <div className="text-red-600">{error.message}</div>}
       <div className="bg-white rounded-lg shadow-xl w-96 items-center mx-4 mr-8 p-8 relative">
         <div className="absolute top-4 right-4">
           <button
@@ -62,6 +57,7 @@ const Login = ({ onClose }) => {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && <div className="text-red-500 text-sm">{error}</div>}
           {!isLogin && (
             <div>
               <label
@@ -93,7 +89,7 @@ const Login = ({ onClose }) => {
               value={formData.email}
               onChange={handleChange}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="mt-1 block w-full p-1 rounded-md outline-none shadow-sm text-md px-2"
             />
           </div>
 
@@ -110,7 +106,7 @@ const Login = ({ onClose }) => {
               value={formData.password}
               onChange={handleChange}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="mt-1 block w-full p-1 rounded-md outline-none shadow-sm text-md px-2"
             />
           </div>
 
@@ -130,11 +126,12 @@ const Login = ({ onClose }) => {
               />
             </div>
           )}
-
           <div>
             <button
               type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 
+                ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={loading}
             >
               {isLogin ? 'Login' : 'Sign Up'}
             </button>

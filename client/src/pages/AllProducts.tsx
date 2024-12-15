@@ -32,16 +32,12 @@ const AllProducts = () => {
     const page = currentPage;
     const limit = 6;
 
-    dispatch(productList({ category, page, limit })).then((data) => {
-      setTotalPages(data.totalPages); // Assume the backend returns this
-    });
+    dispatch(productList({ category, page, limit }));
   }, [dispatch, searchParams, currentPage]);
 
   useEffect(() => {
     setTotalPages(reduxTotalPages);
   }, [reduxTotalPages]);
-
-  console.log(products);
 
   const handlePageChange = (page: number) => {
     setSearchParams((prev) => {

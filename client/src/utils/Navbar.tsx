@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { ShoppingCart, Menu, X, User, Search, Heart } from 'lucide-react';
 import Login from '../pages/Login';
-import { useAppSelector } from '../hooks/reduxHooks';
+import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
 import { RootState } from '../redux/store';
 import { Link } from 'react-router-dom';
+import { logout } from '../redux/actions/authActions';
 
 const Navbar = () => {
+  const dispatch = useAppDispatch();
   const cartItems = useAppSelector((state: RootState) => state.cart?.cartItems);
   const { userInfo } = useAppSelector((state: RootState) => state.userInfo);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -28,6 +30,10 @@ const Navbar = () => {
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
   };
 
   const navLinks = [
@@ -110,7 +116,7 @@ const Navbar = () => {
                         Profile
                       </Link>
                       <button
-                        // onClick={handleLogout}
+                        onClick={handleLogout}
                         className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
                       >
                         Logout
