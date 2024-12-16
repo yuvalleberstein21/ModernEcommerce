@@ -36,37 +36,6 @@ const Shipping = () => {
   };
 
   return (
-    // <div className="container">
-    //   <form className="" onSubmit={submitHandler}>
-    //     <h6>DELIVERY ADDRESS</h6>
-    //     <input
-    //       type="text"
-    //       placeholder="Enter address"
-    //       value={address}
-    //       onChange={(e) => setAddress(e.target.value)}
-    //     />
-    //     <input
-    //       type="text"
-    //       placeholder="Enter city"
-    //       value={city}
-    //       onChange={(e) => setCity(e.target.value)}
-    //     />
-    //     <input
-    //       type="text"
-    //       placeholder="Enter postal code"
-    //       value={postalCode}
-    //       onChange={(e) => setPostalCode(e.target.value)}
-    //     />
-    //     <input
-    //       type="text"
-    //       placeholder="Enter country"
-    //       value={country}
-    //       onChange={(e) => setCountry(e.target.value)}
-    //     />
-    //     <button type="submit">Continue</button>
-    //   </form>
-    // </div>
-
     <div className="container">
       <div className="w-full max-w-3xl py-5 mx-auto p-3">
         <div className="bg-white p-8 rounded-lg lg:shadow-md md:shadow-md ">

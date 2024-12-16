@@ -10,15 +10,15 @@ interface PrivateRouteProps {
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, openModal }) => {
   const { userInfo } = useAppSelector((state: RootState) => state.userInfo);
 
-  // Open the modal only if the user is not logged in, using useEffect to avoid direct state update during rendering
+  // Open the modal only if the user is not logged in
   useEffect(() => {
     if (!userInfo?.token) {
-      openModal(); // Open the login modal
+      openModal(); // Open the login modal if not logged in
     }
-  }, [userInfo, openModal]); // Run this effect whenever userInfo changes
+  }, [userInfo, openModal]); // Re-run when userInfo changes
 
   if (!userInfo?.token) {
-    return null; // Do not render children until user is logged in
+    return null; // Don't render children until user is logged in
   }
 
   return <>{children}</>;

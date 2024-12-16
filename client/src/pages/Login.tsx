@@ -17,6 +17,7 @@ const Login = ({ onClose }: { onClose: () => void }) => {
   const { error, loading, userInfo } = useAppSelector(
     (state: RootState) => state.userInfo
   );
+  console.log(userInfo);
   const [isLogin, setIsLogin] = React.useState(true);
   const {
     register,
@@ -31,12 +32,13 @@ const Login = ({ onClose }: { onClose: () => void }) => {
     if (isLogin) {
       await dispatch(login(data.email, data.password));
     }
-    if (userInfo) {
-      setIsLogin(true);
-      onClose();
-    }
   };
 
+  useEffect(() => {
+    if (userInfo?.token) {
+      onClose();
+    }
+  }, [userInfo, onClose]);
   useEffect(() => {
     dispatch(clearLoginError());
   }, [dispatch]);
