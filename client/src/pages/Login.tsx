@@ -32,9 +32,11 @@ const Login = ({ onClose }: { onClose: () => void }) => {
       await dispatch(login(data.email, data.password));
     }
     if (userInfo) {
+      setIsLogin(true);
       onClose();
     }
   };
+
   useEffect(() => {
     dispatch(clearLoginError());
   }, [dispatch]);

@@ -8,6 +8,7 @@ import ProductLoader from '../components/ProductLoader';
 import { addToCart } from '../redux/actions/cartActions';
 
 const SingleProduct: React.FC = () => {
+  window.scrollTo(0, 0);
   const [quantity, setQuantity] = useState(1);
   const dispatch = useAppDispatch();
   const { productId } = useParams<{ productId: string }>();

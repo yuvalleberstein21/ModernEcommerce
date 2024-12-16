@@ -51,8 +51,6 @@ export const logout = () => (dispatch: AppDispatch) => {
   dispatch({ type: USER_LOGOUT });
   // dispatch({ type: USER_DETAILS_RESET });
   dispatch({ type: CART_CLEAR_ITEMS });
-
-  document.location.href = '/';
 };
 
 export const clearLoginError = () => ({

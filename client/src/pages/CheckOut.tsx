@@ -1,301 +1,258 @@
-import { useState } from 'react';
-const CheckOut = () => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    address: '',
-    city: '',
-    zipCode: '',
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { CreditCard, Lock, MapPin, User, Mail } from 'lucide-react';
+
+// Validation schema
+const checkoutSchema = z
+  .object({
+    firstName: z
+      .string()
+      .min(2, 'First name must be at least 2 characters')
+      .max(50, 'First name must be less than 50 characters')
+      .optional(),
+
+    lastName: z
+      .string()
+      .min(2, 'Last name must be at least 2 characters')
+      .max(50, 'Last name must be less than 50 characters')
+      .optional(),
+
+    email: z
+      .string()
+      .email('Invalid email address')
+      .max(100, 'Email is too long')
+      .optional(),
+
+    phone: z
+      .string()
+      .regex(/^\+?1?\d{0,14}$/, 'Phone number must be numeric')
+      .optional(),
+
+    address: z.object({
+      street: z.string().optional(),
+      city: z.string().optional(),
+      state: z.string().optional(),
+      zipCode: z.string().optional(),
+    }),
+
+    payment: z.object({
+      cardNumber: z.string().optional(),
+
+      expiryDate: z.string().optional(),
+
+      cvv: z.string().optional(),
+    }),
+  })
+  .refine(
+    (data) => {
+      // Final validation at submission
+      const requiredFields = [
+        data.firstName,
+        data.lastName,
+        data.email,
+        data.phone,
+        data.address.street,
+        data.address.city,
+        data.address.state,
+        data.address.zipCode,
+        data.payment.cardNumber,
+        data.payment.expiryDate,
+        data.payment.cvv,
+      ];
+      return requiredFields.every((field) => field && field.trim() !== '');
+    },
+    { message: 'All fields are required' }
+  );
+
+const CheckoutPage = () => {
+  window.scrollTo(0, 0);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(checkoutSchema),
+    mode: 'onBlur', // Validate only when field loses focus
+    reValidateMode: 'onBlur',
   });
 
-  const [errors, setErrors] = useState({});
+  const onSubmit = async (data) => {
+    setIsProcessing(true);
+    try {
+      // Simulate payment processing
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.firstName) newErrors.firstName = 'First name is required';
-    if (!formData.lastName) newErrors.lastName = 'Last name is required';
-    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Valid email is required';
-    }
-    if (!formData.address) newErrors.address = 'Address is required';
-    if (!formData.city) newErrors.city = 'City is required';
-    if (!formData.zipCode) newErrors.zipCode = 'Zip code is required';
-    if (!formData.cardNumber || !/^\d{16}$/.test(formData.cardNumber)) {
-      newErrors.cardNumber = 'Valid 16-digit card number is required';
-    }
-    if (!formData.expiryDate || !/^\d{2}\/\d{2}$/.test(formData.expiryDate)) {
-      newErrors.expiryDate = 'Expiry date (MM/YY) is required';
-    }
-    if (!formData.cvv || !/^\d{3}$/.test(formData.cvv)) {
-      newErrors.cvv = 'Valid 3-digit CVV is required';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validateForm()) {
-      // Process payment logic would go here
-      alert('Order Submitted Successfully!');
+      console.log('Order submitted:', data);
+      alert('Order Processed Successfully!');
+    } catch (error) {
+      alert('Payment processing failed');
+    } finally {
+      setIsProcessing(false);
     }
   };
+
+  const InputWithIcon = ({
+    icon: Icon,
+    label,
+    name,
+    register,
+    errors,
+    type = 'text',
+    ...props
+  }) => (
+    <div className="mb-4">
+      <label className="block text-gray-700 text-sm font-bold mb-2 flex items-center">
+        <Icon className="mr-2 text-gray-500" size={18} />
+        {label}
+      </label>
+      <input
+        type={type}
+        {...register(name)}
+        className={`shadow-sm border ${
+          errors[name]
+            ? 'border-red-500 focus:ring-red-500'
+            : 'border-gray-300 focus:border-blue-500'
+        } w-full py-2 px-3 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50`}
+        {...props}
+      />
+      {errors[name] && (
+        <p className="text-red-500 text-xs mt-1">{errors[name].message}</p>
+      )}
+    </div>
+  );
   return (
-    <div className="container flex flex-col justify-center">
-      <div className="relative sm:max-w-xl sm:mx-auto">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-light-blue-500 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
-        <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
-          <div className="max-w-md mx-auto">
-            <div className="divide-y divide-gray-200">
-              <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-                <h2 className="text-3xl font-extrabold text-center text-gray-900">
-                  Checkout
-                </h2>
+    <div className="container bg-gray-50 flex items-center justify-center px-4 py-8">
+      <div className="max-w-2xl w-full bg-white shadow-2xl rounded-2xl overflow-hidden">
+        <div className="bg-gradient-to-r from-blue-600 to-purple-700 p-6">
+          <h2 className="text-3xl font-extrabold text-white text-center flex items-center justify-center">
+            <Lock className="mr-3" /> Secure Checkout
+          </h2>
+        </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="flex space-x-4">
-                    <div className="w-1/2">
-                      <label
-                        htmlFor="firstName"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        First Name
-                      </label>
-                      <input
-                        type="text"
-                        name="firstName"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${
-                          errors.firstName ? 'border-red-500' : ''
-                        }`}
-                      />
-                      {errors.firstName && (
-                        <p className="mt-1 text-xs text-red-500">
-                          {errors.firstName}
-                        </p>
-                      )}
-                    </div>
-                    <div className="w-1/2">
-                      <label
-                        htmlFor="lastName"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Last Name
-                      </label>
-                      <input
-                        type="text"
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                        className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${
-                          errors.lastName ? 'border-red-500' : ''
-                        }`}
-                      />
-                      {errors.lastName && (
-                        <p className="mt-1 text-xs text-red-500">
-                          {errors.lastName}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="p-8 space-y-6">
+          <div className="grid md:grid-cols-2 gap-6">
+            <InputWithIcon
+              icon={User}
+              label="First Name"
+              name="firstName"
+              register={register}
+              errors={errors}
+            />
+            <InputWithIcon
+              icon={User}
+              label="Last Name"
+              name="lastName"
+              register={register}
+              errors={errors}
+            />
+          </div>
 
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${
-                        errors.email ? 'border-red-500' : ''
-                      }`}
-                    />
-                    {errors.email && (
-                      <p className="mt-1 text-xs text-red-500">
-                        {errors.email}
-                      </p>
-                    )}
-                  </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            <InputWithIcon
+              icon={Mail}
+              label="Email Address"
+              name="email"
+              type="email"
+              register={register}
+              errors={errors}
+            />
+            <InputWithIcon
+              icon={User}
+              label="Phone Number"
+              name="phone"
+              register={register}
+              errors={errors}
+              placeholder="+1 (555) 123-4567"
+            />
+          </div>
 
-                  <div>
-                    <label
-                      htmlFor="address"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Shipping Address
-                    </label>
-                    <input
-                      type="text"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleChange}
-                      className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${
-                        errors.address ? 'border-red-500' : ''
-                      }`}
-                    />
-                    {errors.address && (
-                      <p className="mt-1 text-xs text-red-500">
-                        {errors.address}
-                      </p>
-                    )}
-                  </div>
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold text-gray-700 flex items-center">
+              <MapPin className="mr-2 text-gray-500" /> Shipping Address
+            </h3>
+            <InputWithIcon
+              icon={MapPin}
+              label="Street Address"
+              name="address.street"
+              register={register}
+              errors={errors}
+            />
 
-                  <div className="flex space-x-4">
-                    <div className="w-1/2">
-                      <label
-                        htmlFor="city"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        City
-                      </label>
-                      <input
-                        type="text"
-                        name="city"
-                        value={formData.city}
-                        onChange={handleChange}
-                        className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${
-                          errors.city ? 'border-red-500' : ''
-                        }`}
-                      />
-                      {errors.city && (
-                        <p className="mt-1 text-xs text-red-500">
-                          {errors.city}
-                        </p>
-                      )}
-                    </div>
-                    <div className="w-1/2">
-                      <label
-                        htmlFor="zipCode"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Zip Code
-                      </label>
-                      <input
-                        type="text"
-                        name="zipCode"
-                        value={formData.zipCode}
-                        onChange={handleChange}
-                        className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${
-                          errors.zipCode ? 'border-red-500' : ''
-                        }`}
-                      />
-                      {errors.zipCode && (
-                        <p className="mt-1 text-xs text-red-500">
-                          {errors.zipCode}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="cardNumber"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Card Number
-                    </label>
-                    <input
-                      type="text"
-                      name="cardNumber"
-                      placeholder="1234 5678 9012 3456"
-                      value={formData.cardNumber}
-                      onChange={handleChange}
-                      className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${
-                        errors.cardNumber ? 'border-red-500' : ''
-                      }`}
-                    />
-                    {errors.cardNumber && (
-                      <p className="mt-1 text-xs text-red-500">
-                        {errors.cardNumber}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="flex space-x-4">
-                    <div className="w-1/2">
-                      <label
-                        htmlFor="expiryDate"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Expiry Date
-                      </label>
-                      <input
-                        type="text"
-                        name="expiryDate"
-                        placeholder="MM/YY"
-                        value={formData.expiryDate}
-                        onChange={handleChange}
-                        className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${
-                          errors.expiryDate ? 'border-red-500' : ''
-                        }`}
-                      />
-                      {errors.expiryDate && (
-                        <p className="mt-1 text-xs text-red-500">
-                          {errors.expiryDate}
-                        </p>
-                      )}
-                    </div>
-                    <div className="w-1/2">
-                      <label
-                        htmlFor="cvv"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        CVV
-                      </label>
-                      <input
-                        type="text"
-                        name="cvv"
-                        placeholder="123"
-                        value={formData.cvv}
-                        onChange={handleChange}
-                        className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${
-                          errors.cvv ? 'border-red-500' : ''
-                        }`}
-                      />
-                      {errors.cvv && (
-                        <p className="mt-1 text-xs text-red-500">
-                          {errors.cvv}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <button
-                      type="submit"
-                      className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                      Complete Purchase
-                    </button>
-                  </div>
-                </form>
-              </div>
+            <div className="grid md:grid-cols-3 gap-4">
+              <InputWithIcon
+                icon={MapPin}
+                label="City"
+                name="address.city"
+                register={register}
+                errors={errors}
+              />
+              <InputWithIcon
+                icon={MapPin}
+                label="State"
+                name="address.state"
+                register={register}
+                errors={errors}
+              />
+              <InputWithIcon
+                icon={MapPin}
+                label="ZIP Code"
+                name="address.zipCode"
+                register={register}
+                errors={errors}
+              />
             </div>
           </div>
-        </div>
+
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold text-gray-700 flex items-center">
+              <CreditCard className="mr-2 text-gray-500" /> Payment Details
+            </h3>
+            <InputWithIcon
+              icon={CreditCard}
+              label="Card Number"
+              name="payment.cardNumber"
+              register={register}
+              errors={errors}
+              placeholder="1234 5678 9012 3456"
+            />
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <InputWithIcon
+                icon={CreditCard}
+                label="Expiry Date"
+                name="payment.expiryDate"
+                register={register}
+                errors={errors}
+                placeholder="MM/YY"
+              />
+              <InputWithIcon
+                icon={Lock}
+                label="CVV"
+                name="payment.cvv"
+                register={register}
+                errors={errors}
+                placeholder="123"
+                type="password"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full py-3 rounded-lg text-white font-bold 
+              bg-gradient-to-r from-blue-600 to-purple-700 
+              hover:opacity-90 transition-all duration-300"
+          >
+            {isProcessing ? 'Processing...' : 'Complete Purchase'}
+          </button>
+        </form>
       </div>
     </div>
   );
 };
 
-export default CheckOut;
+export default CheckoutPage;

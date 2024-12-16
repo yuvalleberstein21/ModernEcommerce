@@ -1,4 +1,8 @@
-import { CART_ADD_ITEM, CART_REMOVE_ITEM } from '../constant/CartConstant';
+import {
+  CART_ADD_ITEM,
+  CART_REMOVE_ITEM,
+  CART_SAVE_SHIPPING_ADDRESS,
+} from '../constant/CartConstant';
 import { AppDispatch, RootState } from '../store';
 import { CartItem } from '../../Types/CartInterface';
 
@@ -32,6 +36,14 @@ export const addToCart =
         payload: newCartItem,
       });
     }
+  };
+
+export const saveShippingAddress =
+  (data: []) => async (dispatch: AppDispatch) => {
+    dispatch({
+      type: CART_SAVE_SHIPPING_ADDRESS,
+      payload: data,
+    });
   };
 
 export const removeFromCart = (id: string) => async (dispatch: AppDispatch) => {

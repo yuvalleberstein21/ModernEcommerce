@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.9.1",
     "@reduxjs/toolkit": "^2.4.0",
     "lucide-react": "^0.468.0",
     "react": "^18.3.1",
@@ -20,7 +21,8 @@
     "react-router-dom": "^7.0.2",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^3.1.0",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",

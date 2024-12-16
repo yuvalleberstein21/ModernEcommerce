@@ -14,29 +14,14 @@ import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
 import { RootState } from '../redux/store';
 import { CartItem } from '../Types';
 import { removeFromCart } from '../redux/actions/cartActions';
+import { useNavigate } from 'react-router-dom';
 const Cart = () => {
+  window.scrollTo(0, 0);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const cartItems = useAppSelector((state: RootState) => state.cart?.cartItems);
 
   // Initial cart items
-  // const [cartItems, setCartItems] = useState([
-  //   {
-  //     id: 1,
-  //     name: 'Modern Leather Sofa',
-  //     price: 1299.99,
-  //     quantity: 1,
-  //     image: '/api/placeholder/300/200',
-  //     brand: 'Urban Living',
-  //   },
-  //   {
-  //     id: 2,
-  //     name: 'Ergonomic Office Chair',
-  //     price: 349.99,
-  //     quantity: 2,
-  //     image: '/api/placeholder/300/200',
-  //     brand: 'WorkPro',
-  //   },
-  // ]);
 
   // Coupon and discount state
   // const [couponCode, setCouponCode] = useState('');
@@ -93,6 +78,12 @@ const Cart = () => {
 
   const removeFromCartHandle = (id: string) => {
     dispatch(removeFromCart(id));
+  };
+
+  const handleCheckout = () => {
+    if (cartItems.length > 0) {
+      navigate('/shipping'); // Navigate to checkout page
+    }
   };
 
   return (
@@ -215,6 +206,7 @@ const Cart = () => {
               {/* Checkout Button */}
               <button
                 disabled={cartItems.length === 0}
+                onClick={handleCheckout}
                 className={`w-full mt-4 py-3 rounded flex items-center justify-center ${
                   cartItems.length > 0
                     ? 'bg-blue-600 text-white hover:bg-blue-700'

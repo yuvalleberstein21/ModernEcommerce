@@ -3,11 +3,13 @@ import { ShoppingCart, Menu, X, User, Search, Heart } from 'lucide-react';
 import Login from '../pages/Login';
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
 import { RootState } from '../redux/store';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../redux/actions/authActions';
+import { persistor } from '../redux/store';
 
 const Navbar = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const totalItems = useAppSelector(
     (state: RootState) => state.cart?.totalItems
   );
@@ -36,6 +38,11 @@ const Navbar = () => {
 
   const handleLogout = () => {
     dispatch(logout());
+
+    // Manually purge persisted state (clear localStorage, etc.)
+    persistor.purge().then(() => {
+      navigate('/');
+    });
   };
 
   const navLinks = [

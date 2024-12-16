@@ -7,8 +7,16 @@ export interface CartItem {
   stock: number;
 }
 
+interface ShippingState {
+  address: string;
+  city: string;
+  postalCode: string;
+  country: string;
+}
+
 export interface CartState {
   cartItems: CartItem[];
+  shippingAddress: ShippingState;
   totalItems: number;
   totalPrice: number;
 }
