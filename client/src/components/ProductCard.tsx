@@ -28,7 +28,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <span className="text-md text-gray-600 font-semibold mt-3">
             ${product.price}
           </span>
-          <AddToCartButton product={product} />
+          {product.stock > 0 ? (
+            <AddToCartButton product={product} />
+          ) : (
+            <span className="bg-red-100 text-red-600 items-center text-xs font-semibold px-3 py-3 rounded-full">
+              Out of Stock
+            </span>
+          )}
         </div>
       </div>
     </div>

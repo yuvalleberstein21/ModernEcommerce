@@ -5,13 +5,12 @@ import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
 import { RootState } from '../redux/store';
 import { singleProductDetails } from '../redux/actions/productActions';
 import ProductLoader from '../components/ProductLoader';
+import { addToCart } from '../redux/actions/cartActions';
 
 const SingleProduct: React.FC = () => {
   const [quantity, setQuantity] = useState(1);
   const dispatch = useAppDispatch();
   const { productId } = useParams<{ productId: string }>();
-
-  console.log(productId);
 
   const { product, loading, error } = useAppSelector(
     (state: RootState) => state.product
@@ -22,6 +21,26 @@ const SingleProduct: React.FC = () => {
       dispatch(singleProductDetails(productId));
     }
   }, [dispatch, productId]);
+
+  const handleAddToCart = () => {
+    if (quantity > product.product?.stock) {
+      alert('Insufficient stock available');
+      return;
+    }
+
+    dispatch(
+      addToCart(
+        {
+          product: product.product?._id,
+          name: product.product?.name,
+          image: product.product?.image,
+          price: product.product?.price,
+          stock: product.product?.stock,
+        },
+        quantity // Pass the current quantity
+      )
+    );
+  };
 
   return (
     <div className="container">
@@ -44,7 +63,6 @@ const SingleProduct: React.FC = () => {
             <div className="flex justify-between items-center ">
               <div>
                 <h1 className="text-3xl font-bold">{product.product?.name}</h1>
-                {/* <p className="text-gray-600">{product.brand}</p> */}
               </div>
               <button className="text-gray-500 hover:text-red-500">
                 <Heart size={24} />
@@ -57,20 +75,23 @@ const SingleProduct: React.FC = () => {
                 ${product.product?.price.toFixed(2)}
               </span>
               <div className="flex items-center">
-                {/* <div className="flex text-yellow-500">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  size={20}
-                  fill={
-                    i < Math.floor(product.rating) ? 'currentColor' : 'none'
-                  }
-                />
-              ))}
-            </div> */}
-                {/* <span className="ml-2 text-gray-600">
-              ({product.rating} | {product.reviewCount} reviews)
-            </span> */}
+                <div className="flex text-yellow-500">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      size={20}
+                      fill={
+                        i < Math.floor(product.product?.rating)
+                          ? 'currentColor'
+                          : 'none'
+                      }
+                    />
+                  ))}
+                </div>
+                <span className="ml-2 text-gray-600">
+                  ({product.product?.rating} | {product.product?.reviews}{' '}
+                  reviews)
+                </span>
               </div>
             </div>
 
@@ -80,34 +101,44 @@ const SingleProduct: React.FC = () => {
             {/* Quantity Selector */}
             <div className="flex items-center space-x-4 mb-4">
               <div className="flex items-center border rounded">
-                <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-3 py-1 text-gray-600 hover:bg-gray-100"
-                >
-                  -
-                </button>
-                <span className="px-4">{quantity}</span>
-                <button
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="px-3 py-1 text-gray-600 hover:bg-gray-100"
-                >
-                  +
-                </button>
+                {product.product?.stock > 0 ? (
+                  <>
+                    <button
+                      onClick={() =>
+                        setQuantity((prev) => Math.max(1, prev - 1))
+                      }
+                      className="px-3 py-1 text-gray-600 hover:bg-gray-100"
+                    >
+                      -
+                    </button>
+                    <span className="px-4">{quantity}</span>
+                    <button
+                      onClick={() =>
+                        setQuantity((prev) =>
+                          Math.min(product.product?.stock, prev + 1)
+                        )
+                      }
+                      className="px-3 py-1 text-gray-600 hover:bg-gray-100"
+                    >
+                      +
+                    </button>
+                  </>
+                ) : null}
               </div>
-              <button className="flex items-center bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
-                <ShoppingCart size={20} className="mr-2" /> Add to Cart
-              </button>
+              {product.product?.stock > 0 ? (
+                // <AddToCartButton product={product} />
+                <button
+                  onClick={handleAddToCart}
+                  className="flex items-center bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+                >
+                  <ShoppingCart size={20} className="mr-2" /> Add to Cart
+                </button>
+              ) : (
+                <span className="bg-red-100 text-red-600 items-center text-xs font-semibold px-3 py-3 rounded-full">
+                  Out of Stock
+                </span>
+              )}
             </div>
-
-            {/* Features */}
-            {/* <div>
-          <h3 className="font-semibold mb-2">Key Features</h3>
-          <ul className="list-disc list-inside text-gray-700">
-            {product.features.map((feature, index) => (
-              <li key={index}>{feature}</li>
-            ))}
-          </ul>
-        </div> */}
 
             {/* Additional Info */}
             <div className="mt-4 bg-green-50 p-4 rounded-lg flex items-center space-x-4">

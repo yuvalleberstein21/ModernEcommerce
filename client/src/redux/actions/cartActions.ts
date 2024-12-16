@@ -5,7 +5,6 @@ import { CartItem } from '../../Types/CartInterface';
 export const addToCart =
   (product: CartItem, qty: number = 1) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    // Get the current cart items from the state
     const { cartItems } = getState().cart;
 
     // Check if the product is already in the cart
@@ -14,10 +13,10 @@ export const addToCart =
     );
 
     if (existingCartItem) {
-      // If the item exists, increment its quantity
+      // If the item exists, update its quantity
       const updatedItem = {
-        ...product,
-        quantity: existingCartItem.quantity + qty, // Increment by qty
+        ...existingCartItem,
+        quantity: existingCartItem.quantity + qty,
       };
 
       dispatch({
@@ -25,12 +24,12 @@ export const addToCart =
         payload: updatedItem,
       });
     } else {
-      // If it's a new item, add it to the cart with the specified quantity
-      const cartItem = { ...product, quantity: qty };
+      // Add the new item with the specified quantity
+      const newCartItem = { ...product, quantity: qty };
 
       dispatch({
         type: CART_ADD_ITEM,
-        payload: cartItem,
+        payload: newCartItem,
       });
     }
   };

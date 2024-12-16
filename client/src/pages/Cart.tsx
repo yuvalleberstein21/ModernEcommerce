@@ -132,7 +132,7 @@ const Cart = () => {
                     <h3 className="text-xl font-semibold">{item.name}</h3>
                     {/* <p className="text-gray-600">{item.brand}</p> */}
                     <p className="font-bold text-blue-600">
-                      ${item.price.toFixed(2)}
+                      {/* ${item.price.toFixed(2)} */}
                     </p>
                   </div>
 

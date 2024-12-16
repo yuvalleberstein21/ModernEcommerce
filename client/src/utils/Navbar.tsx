@@ -8,13 +8,15 @@ import { logout } from '../redux/actions/authActions';
 
 const Navbar = () => {
   const dispatch = useAppDispatch();
-  const cartItems = useAppSelector((state: RootState) => state.cart?.cartItems);
+  const totalItems = useAppSelector(
+    (state: RootState) => state.cart?.totalItems
+  );
   const { userInfo } = useAppSelector((state: RootState) => state.userInfo);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+  // const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -87,7 +89,7 @@ const Navbar = () => {
                 rounded-full w-5 h-5 flex items-center justify-center 
                 text-xs font-bold"
                 >
-                  {totalQuantity}
+                  {totalItems}
                 </span>
               </a>
 
