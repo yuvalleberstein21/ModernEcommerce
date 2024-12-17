@@ -68,10 +68,14 @@ export const categoriesList = () => async (dispatch: AppDispatch) => {
 
     const data = await getDataFromServer('api/products/categories');
 
-    dispatch({
-      type: CATEGORIES_LIST_SUCCESS,
-      payload: data,
-    });
+    if (data) {
+      dispatch({
+        type: CATEGORIES_LIST_SUCCESS,
+        payload: data,
+      });
+    } else {
+      console.log('some error');
+    }
   } catch (error: any) {
     dispatch({
       type: CATEGORIES_LIST_FAIL,

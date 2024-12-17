@@ -58,7 +58,7 @@ export const productListReducer = (
 ): ProductState => {
   switch (action.type) {
     case PRODUCT_LIST_REQUEST:
-      return { ...state, loading: true };
+      return { ...state, loading: true, error: null };
     case PRODUCT_LIST_SUCCESS:
       return {
         ...state,
@@ -67,6 +67,7 @@ export const productListReducer = (
         total: action.payload.total,
         totalPages: action.payload.totalPages,
         currentPage: action.payload.page,
+        error: null,
       };
     case PRODUCT_LIST_FAIL:
       return { ...state, loading: false, error: action.payload, products: [] };
@@ -97,9 +98,14 @@ export const categoriesListReducer = (
 ): CategoriesState => {
   switch (action.type) {
     case CATEGORIES_LIST_REQUEST:
-      return { ...state, loading: true };
+      return { ...state, loading: true, error: null };
     case CATEGORIES_LIST_SUCCESS:
-      return { ...state, loading: false, categories: action.payload };
+      return {
+        ...state,
+        loading: false,
+        categories: action.payload,
+        error: null,
+      };
     case CATEGORIES_LIST_FAIL:
       return { ...state, loading: false, error: action.payload };
     default:

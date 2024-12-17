@@ -2,7 +2,11 @@
 // import { login } from '../redux/store/slices/authSlice';
 import React, { useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { clearLoginError, login } from '../redux/actions/authActions';
+import {
+  clearLoginError,
+  login,
+  registerUser,
+} from '../redux/actions/authActions';
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
 import { RootState } from '../redux/store';
 
@@ -31,6 +35,8 @@ const Login = ({ onClose }: { onClose: () => void }) => {
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     if (isLogin) {
       await dispatch(login(data.email, data.password));
+    } else {
+      await dispatch(registerUser(data.name, data.email, data.password));
     }
   };
 
@@ -74,7 +80,7 @@ const Login = ({ onClose }: { onClose: () => void }) => {
                 {...register('name', { required: !isLogin })}
                 // onChange={handleChange}
                 required={!isLogin}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                className="mt-1 block w-full p-1 rounded-md outline-none shadow-sm text-md px-2"
               />
               {errors.name && (
                 <p className="text-red-500 text-xs mt-1">
@@ -92,8 +98,6 @@ const Login = ({ onClose }: { onClose: () => void }) => {
             </label>
             <input
               type="email"
-              // value={formData.email}
-              // onChange={handleChange}
               {...register('email', { required: true })}
               required
               className="mt-1 block w-full p-1 rounded-md outline-none shadow-sm text-md px-2"

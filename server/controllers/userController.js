@@ -3,11 +3,14 @@ const jwt = require('jsonwebtoken');
 const User = require("../models/User");
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const { generateToken } = require('../utils/generateToken');
+const asyncHandler = require('express-async-handler');
+
 
 
 const JWT_SECRET = process.env.JWT_SECRET
 
-const loginUser = async (req, res) => {
+const loginUser = asyncHandler(async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -16,23 +19,18 @@ const loginUser = async (req, res) => {
         }
 
         const user = await User.findOne({ email });
-        console.log(user)
 
         if (!user) {
-            return res.status(401).json({ message: 'Email or Password Are Incorrect' });
+            return res.status(401).json({ message: 'Invalid Email or Password' });
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await user.matchPassword(password)
 
         if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Email or Password Are Incorrect' });
+            return res.status(401).json({ message: 'Invalid Email or Password' });
         }
 
-        const token = jwt.sign(
-            { id: user.id, email: user.email },
-            process.env.JWT_SECRET, // Use environment variable
-            { expiresIn: '1h' }
-        );
+        const token = generateToken(user._id)
 
         res.status(200).json({
             message: 'Login Success',
@@ -42,19 +40,20 @@ const loginUser = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: 'שגיאת שרת: ' + err.message });
     }
-};
+});
 
-const registerUser = async (req, res) => {
+const registerUser = asyncHandler(async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
         if (!name || !email || !password) {
-            return res.status(400).json({ message: "אנא ספק שם, כתובת אימייל וסיסמה" });
+            return res.status(400).json({ message: "Please fill the following fields" });
         }
 
         const existingUser = await User.findOne({ email: email.toLowerCase() });
+
         if (existingUser) {
-            return res.status(409).json({ message: "משתמש זה כבר רשום במערכת" });
+            return res.status(409).json({ message: "User already exists" });
         }
 
         const newUser = new User({
@@ -63,26 +62,23 @@ const registerUser = async (req, res) => {
             password,
         });
 
+        console.log('Before saving user:', newUser);
         await newUser.save();
 
-        const token = jwt.sign(
-            { id: newUser.id, email: newUser.email },
-            process.env.JWT_SECRET,
-            { expiresIn: "1h" }
-        );
+        const token = generateToken(newUser._id);
 
         res.status(201).json({
             message: "משתמש נרשם בהצלחה",
             token,
-            user: { id: newUser.id, email: newUser.email, name: newUser.name },
+            user: { id: newUser.id, email: newUser.email, role: newUser.role, name: newUser.name },
         });
     } catch (err) {
         console.error("Error during registration:", err);
         res.status(500).json({ message: "שגיאת שרת: " + err.message });
     }
-};
+});
 
-const getUserProfile = async (req, res) => {
+const getUserProfile = asyncHandler(async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-password');
 
@@ -95,7 +91,7 @@ const getUserProfile = async (req, res) => {
         console.error(error);
         res.status(500).json({ message: 'Server error retrieving profile' });
     }
-}
+});
 
 
 // Forgot password
