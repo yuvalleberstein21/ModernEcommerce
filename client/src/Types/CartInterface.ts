@@ -12,6 +12,7 @@ interface ShippingState {
   city: string;
   postalCode: string;
   country: string;
+  paymentMethod: string;
 }
 
 export interface CartState {

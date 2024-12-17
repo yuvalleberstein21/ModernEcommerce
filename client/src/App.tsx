@@ -12,6 +12,8 @@ import PrivateRoute from './configs/PrivateRoute';
 import { useState } from 'react';
 import Login from './pages/Login';
 import Shipping from './pages/Shipping';
+import Payment from './pages/Payment';
+import PlaceOrder from './pages/PlaceOrder';
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,6 +47,14 @@ function App() {
           element={
             <PrivateRoute openModal={openModal}>
               <Shipping />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/placeorder"
+          element={
+            <PrivateRoute openModal={openModal}>
+              <PlaceOrder />
             </PrivateRoute>
           }
         />
