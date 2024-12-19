@@ -5,6 +5,10 @@ import {
   USER_LOGIN_REQUEST,
   USER_LOGIN_SUCCESS,
   USER_LOGOUT,
+  USER_PROFILE_DETAILS_FAIL,
+  USER_PROFILE_DETAILS_REQUEST,
+  USER_PROFILE_DETAILS_RESET,
+  USER_PROFILE_DETAILS_SUCCESS,
   USER_REGISTER_FAIL,
   USER_REGISTER_REQUEST,
   USER_REGISTER_SUCCESS,
@@ -30,7 +34,6 @@ export const userLoginReducer = (state = initialState, action) => {
       return { loading: false, error: action.payload };
 
     case USER_LOGOUT:
-      console.log('User logged out');
       return {};
 
     case CLEAR_LOGIN_ERROR:
@@ -51,6 +54,25 @@ export const userRegisterReducer = (state = initialState, action) => {
 
     case USER_REGISTER_FAIL:
       return { loading: false, error: action.payload };
+
+    default:
+      return state;
+  }
+};
+
+export const userProfileDetailsReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case USER_PROFILE_DETAILS_REQUEST:
+      return { ...state, loading: true };
+
+    case USER_PROFILE_DETAILS_SUCCESS:
+      return { loading: false, user: action.payload };
+
+    case USER_PROFILE_DETAILS_FAIL:
+      return { loading: false, error: action.payload };
+
+    case USER_PROFILE_DETAILS_RESET:
+      return {};
 
     default:
       return state;

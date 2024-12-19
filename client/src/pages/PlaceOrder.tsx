@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
 import { RootState } from '../redux/store';
 import { User, Truck, MapPin, ShoppingCart, DollarSign } from 'lucide-react';
+import { useMemo } from 'react';
 
 const PlaceOrder = () => {
   window.scrollTo(0, 0);
@@ -12,10 +13,37 @@ const PlaceOrder = () => {
 
   console.log('cartItems:', cart);
   console.log('userInfo:', userInfo);
+
+  const calculatePrice = useMemo(() => {
+    // Calculate Price
+    const addDecimals = (num) => {
+      return (Math.round(num * 100) / 100).toFixed(2);
+    };
+
+    const itemsPrice = addDecimals(
+      cart.cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
+    );
+
+    const shippingPrice = addDecimals(itemsPrice > 100 ? 0 : 20);
+    const taxPrice = addDecimals(Number(0.15 * itemsPrice).toFixed(2));
+    const totalPrice = (
+      Number(itemsPrice) +
+      Number(shippingPrice) +
+      Number(taxPrice)
+    ).toFixed(2);
+
+    return {
+      itemsPrice,
+      shippingPrice,
+      taxPrice,
+      totalPrice,
+    };
+  }, [cart.cartItems]);
+
   return (
-    <div className="container mt-10 mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <div className="container mt-10 w-full mx-5 p-6 bg-white shadow-lg rounded-lg">
       {/* Customer, Order Info, and Delivery Sections */}
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
+      <div className="grid md:grid-cols-3 gap-6 mb-6">
         {/* Customer Section */}
         <div className="bg-green-50 p-4 rounded-lg flex items-center space-x-4">
           <div className="bg-green-100 p-3 rounded-full">
@@ -89,12 +117,12 @@ const PlaceOrder = () => {
                 </div>
                 <div className="text-center mx-4">
                   <p className="text-gray-500 font-medium">QUANTITY</p>
-                  <p className="font-bold">{item.qty}</p>
+                  <p className="font-bold">{item.quantity}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-gray-500 font-medium">SUBTOTAL</p>
                   <p className="font-bold text-green-600">
-                    ${(item.qty * item.price).toFixed(2)}
+                    ${(item.quantity * item.price).toFixed(2)}
                   </p>
                 </div>
               </div>
@@ -112,30 +140,38 @@ const PlaceOrder = () => {
             <div className="space-y-3">
               <div className="flex justify-between border-b pb-2">
                 <span className="text-gray-600">Products</span>
-                <span className="font-semibold">${cart.itemsPrice}</span>
+                <span className="font-semibold">
+                  ${calculatePrice.itemsPrice}
+                </span>
               </div>
               <div className="flex justify-between border-b pb-2">
                 <span className="text-gray-600">Shipping</span>
-                <span className="font-semibold">${cart.shippingPrice}</span>
+                <span className="font-semibold">
+                  ${calculatePrice.shippingPrice}
+                </span>
               </div>
               <div className="flex justify-between border-b pb-2">
                 <span className="text-gray-600">Tax</span>
-                <span className="font-semibold">${cart.taxPrice}</span>
+                <span className="font-semibold">
+                  ${calculatePrice.taxPrice}
+                </span>
               </div>
               <div className="flex justify-between pt-2">
                 <span className="text-lg font-bold">Total</span>
                 <span className="text-lg font-bold text-green-700">
-                  ${cart.totalPrice}
+                  ${calculatePrice.totalPrice}
                 </span>
               </div>
             </div>
             {/* Uncomment and modify the button as needed */}
-            {/* <button 
-            className="w-full mt-6 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition"
-            onClick={placeOrderHandler}
-          >
-            Place Order
-          </button> */}
+            {cart.cartItems.length === 0 ? null : (
+              <button
+                className="w-full mt-6 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition"
+                // onClick={placeOrderHandler}
+              >
+                Place Order
+              </button>
+            )}
           </div>
         </div>
       </div>

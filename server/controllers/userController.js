@@ -62,7 +62,6 @@ const registerUser = asyncHandler(async (req, res) => {
             password,
         });
 
-        console.log('Before saving user:', newUser);
         await newUser.save();
 
         const token = generateToken(newUser._id);

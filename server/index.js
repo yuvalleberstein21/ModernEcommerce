@@ -1,7 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
 const cors = require('cors');
 const helmet = require('helmet');
 const connectDB = require('./config/db');
@@ -9,6 +7,7 @@ const connectDB = require('./config/db');
 // Routes
 const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 const uploadImageRoute = require('./routes/uploadImageRoute');
 const { notFound, errorHandler } = require('./middleware/Errors');
 
@@ -28,6 +27,7 @@ app.use(helmet());
 // Routes
 app.use('/api/products', productRoutes);
 app.use('/api/auth', userRoutes);
+app.use('/api/orders', orderRoutes);
 app.use('/api/upload_image', uploadImageRoute);
 
 

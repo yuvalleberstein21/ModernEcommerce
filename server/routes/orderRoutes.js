@@ -1,9 +1,10 @@
 const express = require('express');
 const authenticateJWT = require('../middleware/authenticateJWT');
+const { createOrder } = require('../controllers/orderController');
 
 const router = express.Router();
 
-// router.post('/', authenticateJWT, createOrder);
+router.post('/', authenticateJWT, createOrder);
 // router.get('/myorders', authenticateJWT, getUserOrders);
 // router.get('/:id', authenticateJWT, getOrderById);
 // router.get('/', authenticateJWT, admin, getAllOrders);

@@ -1,10 +1,13 @@
-import { postDataToServer } from '../../utils/Api';
+import { getDataFromServer, postDataToServer } from '../../utils/Api';
 import {
   CLEAR_LOGIN_ERROR,
   USER_LOGIN_FAIL,
   USER_LOGIN_REQUEST,
   USER_LOGIN_SUCCESS,
   USER_LOGOUT,
+  USER_PROFILE_DETAILS_FAIL,
+  USER_PROFILE_DETAILS_REQUEST,
+  USER_PROFILE_DETAILS_SUCCESS,
   USER_REGISTER_FAIL,
   USER_REGISTER_REQUEST,
   USER_REGISTER_SUCCESS,
@@ -74,6 +77,36 @@ export const registerUser =
           error.response && error.response.data.message
             ? error.response.data.message
             : error.message,
+      });
+    }
+  };
+
+export const getUserDetails =
+  (id: string) => async (dispatch: AppDispatch, getState) => {
+    try {
+      dispatch({ type: USER_PROFILE_DETAILS_REQUEST });
+      const {
+        userLogin: { userInfo },
+      } = getState();
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
+      const data = await getDataFromServer(`/api/auth/${id}`, config);
+      dispatch({ type: USER_PROFILE_DETAILS_SUCCESS, payload: data });
+    } catch (error: any) {
+      const message =
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message;
+      if (message === 'Not authorized, token failed') {
+        dispatch(logout());
+      }
+      dispatch({
+        type: USER_PROFILE_DETAILS_FAIL,
+        payload: message,
       });
     }
   };

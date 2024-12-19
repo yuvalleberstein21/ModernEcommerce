@@ -14,6 +14,7 @@ import Login from './pages/Login';
 import Shipping from './pages/Shipping';
 import Payment from './pages/Payment';
 import PlaceOrder from './pages/PlaceOrder';
+import UserProfile from './pages/UserProfile';
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,6 +35,14 @@ function App() {
         <Route path="products" element={<AllProducts />} />
         <Route path="admin/createProduct" element={<CreateProductForm />} />
         <Route path="cart" element={<Cart />} />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute openModal={openModal}>
+              <UserProfile />
+            </PrivateRoute>
+          }
+        />
         <Route
           path="/checkout"
           element={
