@@ -15,6 +15,7 @@ import Shipping from './pages/Shipping';
 import Payment from './pages/Payment';
 import PlaceOrder from './pages/PlaceOrder';
 import UserProfile from './pages/UserProfile';
+import Order from './pages/Order';
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -64,6 +65,14 @@ function App() {
           element={
             <PrivateRoute openModal={openModal}>
               <PlaceOrder />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/order/:id"
+          element={
+            <PrivateRoute openModal={openModal}>
+              <Order />
             </PrivateRoute>
           }
         />

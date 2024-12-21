@@ -1,3 +1,4 @@
+import { Product } from '../../Types';
 import { getDataFromServer, postDataToServer } from '../../utils/Api';
 import {
   CATEGORIES_LIST_FAIL,
@@ -47,16 +48,23 @@ export const singleProductDetails =
     try {
       dispatch({ type: SINGLE_PRODUCT_REQUEST });
 
-      const data = await getDataFromServer(`api/products?productId=${id}`);
+      // Use query parameter as per your controller
+      const data = await getDataFromServer<Product>(
+        `api/products?productId=${id}`
+      );
 
+      // The data already contains the nested product structure
       dispatch({
         type: SINGLE_PRODUCT_SUCCESS,
-        payload: data,
+        payload: data, // This will be { product: { ... } }
       });
     } catch (error: any) {
       dispatch({
         type: SINGLE_PRODUCT_FAIL,
-        payload: error.response?.data?.message || error.message,
+        payload:
+          error.response?.data?.message ||
+          error.message ||
+          'Error retrieving product',
       });
     }
   };

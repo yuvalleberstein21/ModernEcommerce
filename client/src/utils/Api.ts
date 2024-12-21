@@ -9,16 +9,18 @@ const axiosInstance = axios.create({
   },
 });
 
-export const getDataFromServer = async <T>(url: string): Promise<T> => {
+export const getDataFromServer = async <T>(
+  url: string,
+  config?: object // Optional second argument
+): Promise<T> => {
   try {
-    const response = await axiosInstance.get(`${GLOBAL_URL}/${url}`);
+    const response = await axiosInstance.get(`${GLOBAL_URL}/${url}`, config);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching data from server:', error);
     throw error;
   }
 };
-
 export const postDataToServer = async <T>(
   url: string,
   data: Record<string, any>, // Add support for request body

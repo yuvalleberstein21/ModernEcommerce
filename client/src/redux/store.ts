@@ -18,6 +18,10 @@ import {
 } from './reducers/productsReducer';
 import { cartReducer } from './reducers/cartReducer';
 import { userLoginReducer } from './reducers/authReducer';
+import {
+  orderCreateReducer,
+  orderDetailsReducer,
+} from './reducers/orderReducer';
 
 // Create the root reducer
 const rootReducer = combineReducers({
@@ -25,6 +29,8 @@ const rootReducer = combineReducers({
   categories: categoriesListReducer,
   product: singleProductReducer,
   createProduct: createProductReducer,
+  orderCreate: orderCreateReducer,
+  orderDetails: orderDetailsReducer,
   cart: cartReducer,
   userInfo: userLoginReducer,
 });

@@ -78,15 +78,33 @@ export const productListReducer = (
 
 export const singleProductReducer = (
   state = singleProductInitialState,
-  action: any
+  action: {
+    type: string;
+    payload: any;
+  }
 ): SingleProductState => {
   switch (action.type) {
     case SINGLE_PRODUCT_REQUEST:
-      return { ...state, loading: true, product: null };
+      return {
+        ...state,
+        loading: true,
+        error: null,
+        product: null,
+      };
     case SINGLE_PRODUCT_SUCCESS:
-      return { ...state, loading: false, product: action.payload };
+      return {
+        ...state,
+        loading: false,
+        product: action.payload,
+        error: null,
+      };
     case SINGLE_PRODUCT_FAIL:
-      return { ...state, loading: false, error: action.payload, product: null };
+      return {
+        ...state,
+        loading: false,
+        product: null,
+        error: action.payload,
+      };
     default:
       return state;
   }

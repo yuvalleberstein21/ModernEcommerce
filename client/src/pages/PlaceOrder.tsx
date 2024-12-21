@@ -2,7 +2,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
 import { RootState } from '../redux/store';
 import { User, Truck, MapPin, ShoppingCart, DollarSign } from 'lucide-react';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
+import { ORDER_CREATE_RESET } from '../redux/constant/OrderConstant';
+import { createOrder } from '../redux/actions/orderActions';
 
 const PlaceOrder = () => {
   window.scrollTo(0, 0);
@@ -10,9 +12,9 @@ const PlaceOrder = () => {
   const navigate = useNavigate();
   const cart = useAppSelector((state: RootState) => state.cart);
   const { userInfo } = useAppSelector((state: RootState) => state.userInfo);
-
-  console.log('cartItems:', cart);
-  console.log('userInfo:', userInfo);
+  const { order, success, error } = useAppSelector(
+    (state: RootState) => state.orderCreate
+  );
 
   const calculatePrice = useMemo(() => {
     // Calculate Price
@@ -39,6 +41,29 @@ const PlaceOrder = () => {
       totalPrice,
     };
   }, [cart.cartItems]);
+
+  React.useEffect(() => {
+    if (success) {
+      navigate(`/order/${order._id}`);
+      dispatch({ type: ORDER_CREATE_RESET });
+    }
+  }, [dispatch, success, order, navigate]);
+
+  const placeOrderHandler = (e) => {
+    e.preventDefault();
+
+    dispatch(
+      createOrder({
+        orderItems: cart.cartItems,
+        shippingAddress: cart.shippingAddress,
+        paymentMethod: cart.shippingAddress.paymentMethod,
+        itemsPrice: calculatePrice.itemsPrice,
+        shippingPrice: calculatePrice.shippingPrice,
+        taxPrice: calculatePrice.taxPrice,
+        totalPrice: calculatePrice.totalPrice,
+      })
+    );
+  };
 
   return (
     <div className="container mt-10 w-full mx-5 p-6 bg-white shadow-lg rounded-lg">
@@ -167,11 +192,12 @@ const PlaceOrder = () => {
             {cart.cartItems.length === 0 ? null : (
               <button
                 className="w-full mt-6 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition"
-                // onClick={placeOrderHandler}
+                onClick={placeOrderHandler}
               >
                 Place Order
               </button>
             )}
+            {error && <div>{error}</div>}
           </div>
         </div>
       </div>
