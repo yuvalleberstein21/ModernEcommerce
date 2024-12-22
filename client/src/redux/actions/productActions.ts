@@ -18,7 +18,18 @@ import { AppDispatch } from '../store';
 
 // Fetch Product List
 export const productList =
-  (queries: { category?: string; page?: number; limit?: number } = {}) =>
+  (
+    queries: {
+      category?: string;
+      page?: number;
+      limit?: number;
+      minPrice?: number;
+      maxPrice?: number;
+      sort?: string;
+      inStock?: boolean;
+      minRating?: number;
+    } = {}
+  ) =>
   async (dispatch: AppDispatch) => {
     try {
       dispatch({ type: PRODUCT_LIST_REQUEST });

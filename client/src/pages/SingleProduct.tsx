@@ -16,7 +16,6 @@ const SingleProduct: React.FC = () => {
   const { product, loading, error } = useAppSelector(
     (state: RootState) => state.product
   );
-  console.log(product);
 
   useEffect(() => {
     if (productId) {
@@ -50,8 +49,7 @@ const SingleProduct: React.FC = () => {
 
   if (loading) return <ProductLoader />;
   if (error) return <div className="container py-8 text-red-600">{error}</div>;
-  if (!product.product)
-    return <div className="container py-8">Product not found</div>;
+  if (!product) return <div className="container py-8">Product not found</div>;
 
   const { name, image, price, description, stock, rating, reviews } =
     product.product;
