@@ -13,17 +13,7 @@ cloudinary.config({
 
 // Get all products // single product
 const getProducts = asyncHandler(async (req, res) => {
-    const {
-        productId,
-        page = 1,
-        limit = 6,
-        category,
-        minPrice,
-        maxPrice,
-        sort,
-        stock,
-        minRating
-    } = req.query;
+    const { productId, page = 1, limit = 6, category } = req.query;
 
     try {
         if (productId) {
@@ -35,34 +25,10 @@ const getProducts = asyncHandler(async (req, res) => {
             return res.json({ product });
         } else {
             // Base query
-            let query = {};
+            const query = category ? { category } : {};
 
-            if (category) {
-                query.category = category;
-            }
-            if (minPrice || maxPrice) {
-                query.price = {};
-                if (minPrice) query.price.$gte = Number(minPrice);
-                if (maxPrice) query.price.$lte = Number(maxPrice);
-            }
-            if (stock) {
-                query.stock = { $gt: 0 }; // Ensure products with stock > 0
-            }
-            if (minRating) {
-                query.rating = { $gte: Number(minRating) }; // Ensure products with rating >= minRating
-            }
-
-            // Sort options
-            let sortOption = {};
-            if (sort) {
-                if (sort === "lowToHigh") sortOption.price = 1; // Ascending price
-                else if (sort === "highToLow") sortOption.price = -1; // Descending price
-                else if (sort === "rating") sortOption.rating = -1; // Descending rating
-            }
-
-            // Fetch products with filters and pagination
+            // Fetch products with optional category filter and pagination
             const products = await Product.find(query)
-                .sort(sortOption)
                 .limit(Number(limit))
                 .skip((Number(page) - 1) * Number(limit));
 

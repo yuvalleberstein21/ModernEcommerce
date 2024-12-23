@@ -18,27 +18,21 @@ import { AppDispatch } from '../store';
 
 // Fetch Product List
 export const productList =
-  (
-    queries: {
-      category?: string;
-      page?: number;
-      limit?: number;
-      minPrice?: number;
-      maxPrice?: number;
-      sort?: string;
-      inStock?: boolean;
-      minRating?: number;
-    } = {}
-  ) =>
+  (queries: { category?: string; page?: number; limit?: number }) =>
   async (dispatch: AppDispatch) => {
     try {
       dispatch({ type: PRODUCT_LIST_REQUEST });
 
+      // Convert queries to query string
       const queryString = new URLSearchParams(
-        queries as Record<string, string>
+        Object.entries(queries)
+          .filter(([_, value]) => value !== undefined) // Remove undefined values
+          .map(([key, value]) => [key, String(value)]) // Ensure values are strings
       ).toString();
+
       const url = `api/products${queryString ? `?${queryString}` : ''}`;
 
+      // Fetch data from the server
       const data = await getDataFromServer(url);
 
       dispatch({

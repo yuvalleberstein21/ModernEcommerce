@@ -28,39 +28,13 @@ const AllProducts = () => {
     totalPages: reduxTotalPages = 1, // Add this from the Redux state
   } = useAppSelector((state: RootState) => state.products);
 
-  const [minPrice, setMinPrice] = useState<number | undefined>();
-  const [maxPrice, setMaxPrice] = useState<number | undefined>();
-  const [sort, setSort] = useState<string | undefined>();
-  const [inStock, setInStock] = useState<boolean | undefined>();
-  const [minRating, setMinRating] = useState<number | undefined>();
-
   useEffect(() => {
     const category = searchParams.get('category') || '';
     const page = currentPage;
     const limit = 6;
 
-    dispatch(
-      productList({
-        category,
-        page,
-        limit,
-        minPrice,
-        maxPrice,
-        sort,
-        inStock,
-        minRating,
-      })
-    );
-  }, [
-    dispatch,
-    searchParams,
-    currentPage,
-    minPrice,
-    maxPrice,
-    sort,
-    inStock,
-    minRating,
-  ]);
+    dispatch(productList({ category, page, limit }));
+  }, [dispatch, searchParams, currentPage]);
 
   useEffect(() => {
     setTotalPages(reduxTotalPages);
