@@ -18,31 +18,48 @@ import { AppDispatch } from '../store';
 
 // Fetch Product List
 export const productList =
-  (queries: { category?: string; page?: number; limit?: number }) =>
+  (queries: {
+    category?: string;
+    page?: number;
+    limit?: number;
+    [key: string]: any;
+  }) =>
   async (dispatch: AppDispatch) => {
     try {
       dispatch({ type: PRODUCT_LIST_REQUEST });
 
-      // Convert queries to query string
+      // Construct query string from the queries object
       const queryString = new URLSearchParams(
         Object.entries(queries)
-          .filter(([_, value]) => value !== undefined) // Remove undefined values
-          .map(([key, value]) => [key, String(value)]) // Ensure values are strings
+          .filter(
+            ([_, value]) =>
+              value !== undefined &&
+              value !== '' &&
+              value !== 'default' &&
+              value !== false &&
+              value !== 0 // Exclude unwanted default values
+          )
+          .map(([key, value]) => [key, String(value)]) // Convert values to strings
       ).toString();
+      console.log('Query String:', queryString);
 
       const url = `api/products${queryString ? `?${queryString}` : ''}`;
+      console.log('Generated URL:', url);
 
       // Fetch data from the server
       const data = await getDataFromServer(url);
 
+      // Dispatch success action with payload
       dispatch({
         type: PRODUCT_LIST_SUCCESS,
         payload: data,
       });
     } catch (error: any) {
+      // Dispatch failure action with error message
       dispatch({
         type: PRODUCT_LIST_FAIL,
-        payload: error.response?.data?.message || error.message,
+        payload:
+          error.response?.data?.message || error.message || 'An error occurred',
       });
     }
   };

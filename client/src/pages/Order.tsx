@@ -25,6 +25,12 @@ const Order: React.FC = () => {
     (state: RootState) => state.orderDetails
   );
 
+  React.useEffect(() => {
+    if (id) {
+      dispatch(getOrderDetails(id));
+    }
+  }, [dispatch, id]);
+
   console.log(order);
 
   if (!loading) {
@@ -37,12 +43,6 @@ const Order: React.FC = () => {
       order.orderItems.reduce((acc, item) => acc + item.price * item.qty, 0)
     );
   }
-
-  React.useEffect(() => {
-    if (id) {
-      dispatch(getOrderDetails(id));
-    }
-  }, [dispatch, id]);
 
   if (loading) {
     return (
