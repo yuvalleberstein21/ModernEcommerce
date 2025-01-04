@@ -13,22 +13,31 @@ cloudinary.config({
 
 // Get all products // single product
 const getProducts = asyncHandler(async (req, res) => {
-    const { productId, page = 1, limit = 6, category } = req.query;
+    const { productId, page = 1, limit = 6, category, minPrice, maxPrice, inStock, rating, sort } = req.query;
 
     try {
         if (productId) {
-            // If productId is passed, fetch a single product
             const product = await Product.findById(productId);
             if (!product) {
                 return res.status(404).json({ message: "Product not found" });
             }
             return res.json({ product });
         } else {
-            // Base query
-            const query = category ? { category } : {};
+            const query = {};
 
-            // Fetch products with optional category filter and pagination
+            if (category) query.category = category;
+            if (minPrice) query.price = { ...query.price, $gte: Number(minPrice) };
+            if (maxPrice) query.price = { ...query.price, $lte: Number(maxPrice) };
+            if (inStock !== undefined) query.inStock = inStock === 'true';
+            if (rating) query.rating = { $gte: Number(rating) };
+
+            const sortOptions = {};
+            if (sort === 'priceAsc') sortOptions.price = 1;
+            if (sort === 'priceDesc') sortOptions.price = -1;
+            if (sort === 'ratingDesc') sortOptions.rating = -1;
+
             const products = await Product.find(query)
+                .sort(sortOptions)
                 .limit(Number(limit))
                 .skip((Number(page) - 1) * Number(limit));
 
@@ -46,6 +55,40 @@ const getProducts = asyncHandler(async (req, res) => {
         res.status(500).json({ message: "Error retrieving products", error: err.message });
     }
 });
+// const getProducts = asyncHandler(async (req, res) => {
+//     const { productId, page = 1, limit = 6, category } = req.query;
+
+//     try {
+//         if (productId) {
+//             // If productId is passed, fetch a single product
+//             const product = await Product.findById(productId);
+//             if (!product) {
+//                 return res.status(404).json({ message: "Product not found" });
+//             }
+//             return res.json({ product });
+//         } else {
+//             // Base query
+//             const query = category ? { category } : {};
+
+//             // Fetch products with optional category filter and pagination
+//             const products = await Product.find(query)
+//                 .limit(Number(limit))
+//                 .skip((Number(page) - 1) * Number(limit));
+
+//             const total = await Product.countDocuments(query);
+
+//             return res.json({
+//                 products,
+//                 total,
+//                 page: Number(page),
+//                 totalPages: Math.ceil(total / limit),
+//             });
+//         }
+//     } catch (err) {
+//         console.error('Error fetching products:', err);
+//         res.status(500).json({ message: "Error retrieving products", error: err.message });
+//     }
+// });
 
 
 
