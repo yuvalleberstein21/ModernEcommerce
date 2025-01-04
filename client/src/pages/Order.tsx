@@ -17,48 +17,45 @@ import { getOrderDetails } from '../redux/actions/orderActions';
 
 const Order: React.FC = () => {
   window.scrollTo(0, 0);
-  const { id } = useParams<{ id: string }>();
 
+  const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
 
   const { order, loading, error } = useAppSelector(
     (state: RootState) => state.orderDetails
   );
 
+  const itemsPrice = React.useMemo(() => {
+    if (!loading && order) {
+      const addDecimals = (num: number) =>
+        (Math.round(num * 100) / 100).toFixed(2);
+      return addDecimals(
+        order.orderItems.reduce((acc, item) => acc + item.price * item.qty, 0)
+      );
+    }
+    return 0;
+  }, [loading, order]);
   React.useEffect(() => {
     if (id) {
       dispatch(getOrderDetails(id));
     }
   }, [dispatch, id]);
 
-  console.log(order);
-
-  if (!loading) {
-    // Calculate Price
-    const addDecimals = (num) => {
-      return (Math.round(num * 100) / 100).toFixed(2);
-    };
-
-    order.itemsPrice = addDecimals(
-      order.orderItems.reduce((acc, item) => acc + item.price * item.qty, 0)
-    );
-  }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
       </div>
     );
   }
 
-  if (error) {
-    return (
-      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-        {error}
-      </div>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+  //       {error}
+  //     </div>
+  //   );
+  // }
 
   const StatusBadge = ({ isPaid, date }: { isPaid: boolean; date?: Date }) => (
     <div
@@ -194,7 +191,7 @@ const Order: React.FC = () => {
             <div className="p-6 space-y-4">
               <div className="flex justify-between">
                 <span className="text-gray-600">Products</span>
-                <span className="font-medium">${order.itemsPrice}</span>
+                <span className="font-medium">${itemsPrice}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Shipping</span>
@@ -214,8 +211,8 @@ const Order: React.FC = () => {
                   ${order.totalPrice.toFixed(2)}
                 </span>
               </div>
-
-              {/* {!order.isPaid && (
+              {/* 
+              {!order.isPaid && (
                 <div className="mt-6">
                   {loadingPay ? (
                     <div className="flex justify-center">

@@ -21,6 +21,7 @@ import { userLoginReducer } from './reducers/authReducer';
 import {
   orderCreateReducer,
   orderDetailsReducer,
+  orderListMyReducer,
 } from './reducers/orderReducer';
 
 // Create the root reducer
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
   createProduct: createProductReducer,
   orderCreate: orderCreateReducer,
   orderDetails: orderDetailsReducer,
+  orderListMy: orderListMyReducer,
   cart: cartReducer,
   userInfo: userLoginReducer,
 });

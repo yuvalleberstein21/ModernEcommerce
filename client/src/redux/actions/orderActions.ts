@@ -7,6 +7,9 @@ import {
   ORDER_DETAILS_FAIL,
   ORDER_DETAILS_REQUEST,
   ORDER_DETAILS_SUCCESS,
+  ORDER_LIST_MY_FAIL,
+  ORDER_LIST_MY_REQUEST,
+  ORDER_LIST_MY_SUCCESS,
 } from '../constant/OrderConstant';
 import { AppDispatch } from '../store';
 import { logout } from './authActions';
@@ -80,3 +83,34 @@ export const getOrderDetails =
       });
     }
   };
+
+export const listMyOrders = () => async (dispatch: AppDispatch, getState) => {
+  try {
+    dispatch({ type: ORDER_LIST_MY_REQUEST });
+
+    const { userInfo } = getState();
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.userInfo.token}`,
+      },
+    };
+    const data = await getDataFromServer(`api/orders`, config);
+
+    console.log(data);
+    dispatch({ type: ORDER_LIST_MY_SUCCESS, payload: data });
+  } catch (error: any) {
+    const message =
+      error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message;
+    if (message === 'Not authorized, token failed') {
+      dispatch(logout());
+    }
+
+    dispatch({
+      type: ORDER_LIST_MY_FAIL,
+      payload: message,
+    });
+  }
+};
